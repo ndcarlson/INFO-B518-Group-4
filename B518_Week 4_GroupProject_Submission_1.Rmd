@@ -1,0 +1,322 @@
+---
+title: "B518 | Week 4 | Group Project | Submission 1"
+author: "Group 4 - Alex Toon | Nicholas Carlson | Divya Reddy Konda"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, max.print = 200, warning = FALSE, message = FALSE, fig.align="center")
+```
+
+# Project Idea One - Global Health Statistics - Kaggle
+## 1) Source: URL: https://docs.owid.io/projects/covid/en/latest/dataset.html
+
+### Selection Criteria:
+#### The data (see above) does meet the criteria of the assignment. In that it is relevant to health, publically accessible, sizable (61 columns and 530,292 rows), includes both categorical (e.g. country) and continuous variables (e.g. new_cases_per_million, total_deaths_per_million) and finally has been ethically sourced and de-identified. 
+
+
+
+```{r dataset_one_import}
+dataset_one_URL <- "https://docs.owid.io/projects/covid/en/latest/dataset.html"
+dataset_one_URL # to print the URL for the PDF
+
+data1 <- read.csv("data/raw/coviddata.csv", stringsAsFactors = FALSE)
+
+c(n_rows = nrow(data1), n_cols = ncol(data1))
+head(names(data1), 12)
+
+u <- unique(data1$country)
+u[grepl("United|USA|UK", u, ignore.case = TRUE)]
+```
+
+
+## 2) Introduction (4-6 Sentences)
+This project uses Covid 19 data from 'Our world in data'. We use this to primarily compare how daily new cases per million varied across four countries in 2021. We focus on 2021 to keep our comparisons on a common phase of the pandemic. The dataset itself does cover many more countries and years and also includes data on total cases and total deaths. We used the fields that have the suffix 'per_million'as any comparisons scale by population size. 
+
+## 3) Why this dataset? (1 paragraph)
+ This dataset is highly relevant to health outcomes. The dataset is also very well documented, large (61 columns and 530k rows). For analysis potential, this dataset has both continuous fields (total_deaths_per_million, new_cases_per_million)  and categorical (e.g. Country), feasible for tables, histograms, boxplots, time trends. Using the fields with the suffix "per_million" allows better scaling for cross country comparisons and summaries. 
+  
+## 4) Variables and structure
+  
+```{r Variables_and_structure}
+
+#Size
+c(n_rows = nrow(data1), n_cols = ncol(data1))
+
+#Column Names
+head(names(data1))
+
+#Types
+table(sapply(data1, function(x) class(x)[1]))
+
+#quick analysis
+
+str(data1, list.len = 20)
+head(data1, 10)
+summary(data1)
+
+```
+## 5) Research questions
+- 1. What share of days exceed a threshold (to simulated a government policy threshold to "flatten the curve") e.g 50 cases per million in each country
+- 2. Which of the selected countries had the highest typical daily new cases per million in 2021
+- 3. How did the monthly mean of new cases per million over 2021 for each country
+
+## 6) Data clean up & Processing plan
+We parsed the date field and derived a 'year' variable, then restricted the dataset to 2021 to keep figures more legible and comparable. We fixed our analysis to a small set of countries (United States, United Kingdom, China, Belgium) and then verified each has sufficient non missing values for 'new_cases_per_million' in 2021. this processing prepares the data for descriptive statistics and many visualisations.    
+```{r data_clean_up}
+
+#check year is available & parse
+data1$date <- as.Date(data1$date)
+data1$year <- as.integer(format(data1$date, "%Y"))
+
+#filter by one year to reduce dataset. Focusing on year 2021
+d1_21 <- subset(data1, year ==2021)
+
+
+# lock in selected countries
+keep_countries <- c("United States", "United Kingdom", "China", "Belgium")
+
+
+# Only keep countries with enough non missing values for 'new_cases_per_million'
+ok_counts <- tapply(!is.na(d1_21$new_cases_per_million), d1_21$country, sum)
+
+#show counts for chosen countries
+counts_chosen <- ok_counts[keep_countries]
+counts_chosen
+
+d1_21_f <- subset(d1_21,
+            country %in% keep_countries,
+            select = c(country, date, new_cases_per_million))
+
+d1_21_f$country <- factor (d1_21_f$country, levels = keep_countries)
+
+```
+
+## 7) Descriptive statistics & visualisations
+ We summarise categories (counts/proportions), report center & spread for one mumeric variable and add simple plots to visualise patterns 
+### 7.1) One-Way frequency table (categorical)
+ Counts and proportions for a categorical variable 
+```{r onewaytable}
+# Counts and proportions for country
+tab_country <- table(d1_21_f$country)
+prop_country <- prop.table(tab_country)
+
+tab_country
+round(prop_country, 3)
+```
+  
+
+
+### 7.2) Bar Chart of Disease.Category (counts)
+ Bar chart / Bar plot of disease category by count 
+```{r barplot}
+# Bar chart / Bar plot of disease category by count
+med_cases <- tapply(d1_21_f$new_cases_per_million,
+                    d1_21_f$country,
+                    median, na.rm = TRUE)
+
+barplot(med_cases,
+        main = "Median daily new cases per million (2021)", 
+        xlab = "Country",
+        ylab = "Median new cases per million",
+        las = 2)
+
+```
+  
+
+
+### 7.3) Two way table (category by category)
+  
+```{r twowaytable}
+# Cross-tab and row/column proportions
+threshold <- 50
+
+d_tw <- subset(d1_21_f, !is.na(new_cases_per_million))
+
+d_tw$high_day <- d_tw$new_cases_per_million > threshold
+
+tw <- table(d_tw$country, d_tw$high_day)
+tw
+
+round(prop.table(tw, margin = 1), 3)
+round(prop.table(tw, margin = 2), 3)
+
+addmargins(tw)
+row_high <- round(prop.table(tw, margin = 1)[, "TRUE"], 3)
+row_high
+
+```
+  
+
+
+### 7.4) Center & Spread (overall, selected countries, 2021)
+  
+```{r center_and_spread}
+
+
+
+x <- d1_21_f$new_cases_per_million
+x <- x[!is.na(x)]
+
+overall_stats <- c(
+  mean = mean(x),
+  median = median(x),
+  min = min(x),
+  max = max(x),
+  range = diff(range(x)),
+  IQR = IQR(x),
+  sd = sd(x))
+
+round(overall_stats[c("median","IQR","sd")], 1)
+
+
+#By Countries summaries 
+by_med <- tapply(d1_21_f$new_cases_per_million, d1_21_f$country, median, na.rm = TRUE)
+by_iqr <- tapply(d1_21_f$new_cases_per_million, d1_21_f$country, IQR, na.rm = TRUE)
+by_sd <- tapply(d1_21_f$new_cases_per_million, d1_21_f$country, sd, na.rm = TRUE)
+
+
+by_summ <- data.frame(
+    country = names(by_med),
+    median = round(by_med, 1),
+    IQR = round(by_iqr, 1),
+    sd = round(by_sd, 1),
+    row.names = NULL
+)
+
+print(by_summ)
+
+```
+  
+
+
+### 7.5) Histogram (shape of the distrubution)
+  
+```{r histogram}
+
+#Dropping NA's
+x <- d1_21_f$new_cases_per_million
+x <- x[!is.na(x)]
+
+# Looking at the shape of the distrubution through a histogram
+h <- hist(x ,
+          probability = TRUE, # Relative frequency histogram
+          main = "Daily new cases per million",
+          xlab = "New cases per million",
+          ylab = "Relative Frequency",
+          breaks = 50,
+          xlim = c(0,1500),
+          col = "purple",
+          border = "black")
+
+# Add frequency polygon (connects midpoints of histogram bins)
+  lines(h$mids, h$density, type = "l", col = "red", lwd = 2)
+
+# Adding a smooth density curve for comparison
+  lines(density(x), col = "orange", lwd = 2, lty = 2)
+
+# Add legend
+legend("topright",
+       legend = c("Density", "Density Curve"),
+       col = c("red", "orange"),
+       lwd = 2,
+       lty = c(1, 2))
+
+```
+  
+
+
+### 7.6) Boxplot (numeric by category)
+ Boxplot (Mortality rate by category) 
+```{r boxplot}
+# Boxplot
+
+  # Order by median
+  d1_21_f$country <- reorder(d1_21_f$country, d1_21_f$new_cases_per_million, median, na.rm = TRUE)
+
+  # % of high days per country
+  ## Reusing previously set threshold of '50'
+  
+  d_tmp <- subset(d1_21_f, !is.na(new_cases_per_million))
+  pct_high <- tapply(d_tmp$new_cases_per_million > threshold,
+                     d_tmp$country, function(z) mean(z, na.rm = TRUE))
+  pct_high <- round(100 * pct_high[levels(d1_21_f$country)], 0)
+
+  
+  lab <- paste0(levels(d1_21_f$country), "\n", pct_high, "% >", threshold)
+  
+  #Box plot
+  bp <- boxplot(new_cases_per_million ~ country, data = d1_21_f,
+          names = lab,
+          main = "Daily new cases per million, by country in 2021",
+          ylab = "New cases per Million",
+          xlab = "Country",
+          col = "lightgreen",
+          las = 2, 
+          outline = TRUE,
+          border = "purple")
+  
+  #Percentiles
+  q <- quantile(d1_21_f$new_cases_per_million, probs = c(0.25, 0.5, 0.75), na.rm = TRUE)
+
+  # Adding a horizontal line for the quarters
+  abline(h = q, col = c("blue", "red", "orange"), lty = c(2, 3, 2))
+  
+```
+  
+
+
+### 7.7) Simple time trend (average by year)
+  
+```{r timetrend}
+
+#month index
+d1_21_f$month_num <- as.integer(format(d1_21_f$date, "%m"))
+
+# Monthly means by country
+m_means <- aggregate(new_cases_per_million ~ country + month_num,
+                     data = d1_21_f, FUN = function(z) mean(z, na.rm = TRUE))
+
+
+countries = c("United States", "United Kingdom", "China","Belgium")
+mat <- with (m_means, tapply(new_cases_per_million, list(month_num, country), mean))
+mat <- mat[1:12, countries, drop = FALSE]
+
+# Set highest point to scale chart
+y_max <- max(mat, na.rm = TRUE)
+
+plot(1:12, mat[, "United States"], type = "l", lwd = 2,
+     xaxt = "n", xlab = "Month in 2021",
+     ylab = "mean new cases per million",
+     main = "Monthly mean new cases per million",
+     ylim = c(0, y_max * 1.1))
+
+axis(1, at = 1:12, labels = month.abb)
+lines(1:12, mat[, "United Kingdom"], lwd = 2)
+lines(1:12, mat[, "China"], lwd = 2)
+lines(1:12, mat[, "Belgium"], lwd = 2)
+
+legend("topleft",
+       legend = countries, 
+       lwd = 2, bty = "n")
+
+```
+  
+## 8) Planned statisical methods
+We will compare 2021 distrubutions of 'new_cases_per_million' across the four countries using.... 
+
+  
+## 9) Limitations
+- Measurement differences - countries have different reporting rules, testing cadence & breadth.
+- Scope - Only 2021 was analysed. Other years or waves of the disease may show other patterns. 
+- per million rates do not adjust for demographics of each country, which may show other patterns. 
+- China has several near zero analysis - This may reflect reporting practices of this specific country
+
+## 10) References
+Our World in Data. "Coronvirus Pandemic (COVID-19) dataset." source location - Source: URL: https://docs.owid.io/projects/covid/en/latest/dataset.html 
+
+## 11) Appendix
+```{r appendix}
+sessionInfo()
+```
