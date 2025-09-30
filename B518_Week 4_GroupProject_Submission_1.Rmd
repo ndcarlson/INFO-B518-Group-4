@@ -340,9 +340,9 @@ We will compare 2021 distrubutions of 'new_cases_per_million' across the four co
 # Project Idea Two - Covid 19 Hospitalizations in France
 # Link to the dataset
 
-Kaggle - Coronavirusdataset France (file: `chiffres-cles.csv`)  
-Actual URL: <https://www.kaggle.com/datasets/mclikmb4/coronavirusdataset-france?select=chiffres-cles.csv>
-Google drive URL: <https://drive.google.com/file/d/1rXHdGEDWFAMaitmkNSgehAt_e2FaC_PZ/view?usp=sharing>
+**Kaggle** - Coronavirusdataset France (file: `chiffres-cles.csv`)  
+**Actual URL:** <https://www.kaggle.com/datasets/mclikmb4/coronavirusdataset-france?select=chiffres-cles.csv>  
+**Google drive URL:** <https://drive.google.com/file/d/1rXHdGEDWFAMaitmkNSgehAt_e2FaC_PZ/view?usp=sharing>
 
 # Introduction to the dataset
 
