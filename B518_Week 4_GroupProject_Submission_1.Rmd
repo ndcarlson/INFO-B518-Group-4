@@ -2,14 +2,37 @@
 title: "B518 | Week 4 | Group Project | Submission 1"
 author: "Group 4 - Alex Toon | Nicholas Carlson | Divya Reddy Konda"
 date: "`r Sys.Date()`"
-output: pdf_document
+output:
+  pdf_document:
+    number_sections: true
+    latex_engine: xelatex
+fontsize: 11pt
+header-includes:
+  - \usepackage{placeins}
+params:
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, max.print = 200, warning = FALSE, message = FALSE, fig.align="center")
+```{r include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.align = "center",
+  fig.width = 6.5,
+  fig.height = 3.6
+)
+
+suppressPackageStartupMessages({
+  library(readr)
+  library(dplyr)
+  library(tidyr)
+  library(ggplot2)
+  library(knitr)
+})
+
 ```
 
-# Project Idea One - Global Health Statistics - Kaggle
+# Project Idea One - Covid 19 (2021 ONLY - USA, UK, China, Belgium)
 ## 1) Source: URL: https://docs.owid.io/projects/covid/en/latest/dataset.html
 
 ### Selection Criteria:
@@ -313,10 +336,255 @@ We will compare 2021 distrubutions of 'new_cases_per_million' across the four co
 - per million rates do not adjust for demographics of each country, which may show other patterns. 
 - China has several near zero analysis - This may reflect reporting practices of this specific country
 
-## 10) References
-Our World in Data. "Coronvirus Pandemic (COVID-19) dataset." source location - Source: URL: https://docs.owid.io/projects/covid/en/latest/dataset.html 
 
-## 11) Appendix
-```{r appendix}
-sessionInfo()
+# Project Idea Two - Covid 19 Hospitalizations in France
+# Link to the dataset
+
+Kaggle - Coronavirusdataset France (file: `chiffres-cles.csv`)  
+Actual URL: <https://www.kaggle.com/datasets/mclikmb4/coronavirusdataset-france?select=chiffres-cles.csv>
+Google drive URL: <https://drive.google.com/file/d/1rXHdGEDWFAMaitmkNSgehAt_e2FaC_PZ/view?usp=sharing>
+
+# Introduction to the dataset
+
+This dataset provides daily COVID-19 surveillance indicators for France at multiple geographic granularities (country, region, department, overseas collectivities). Each record includes a calendar date, a location code, and a location name, enabling comparisons across space and time. Indicators cover hospitalized patients, ICU occupancy, cumulative deaths, cumulative recoveries, and daily flows of new admissions (hospital and ICU). Source/provenance fields support auditability. The structure suits descriptive analyses and visualizations, with optional regional comparisons to highlight spatial heterogeneity. These indicators and their definitions are documented on the Kaggle dataset page (mclikmb4, 2020-2021).
+
+# Dataset justification
+
+**Relevance:** Directly biomedical/public-health, reflecting real-world hospital and ICU loads during COVID-19.
+
+**Size/structure:** The file far exceeds the minimum requirements (well over 100 rows and more than 20 columns) and includes both categorical (granularity, location IDs, sources) and continuous (counts) variables.
+
+**Accessibility/ethics:** Publicly accessible aggregated, de-identified counts suitable for academic use.
+
+**Analytical potential:** Enables trend estimation, wave identification, geographic comparison, and lead-lag analysis between admissions (“flow”) and occupancy (“stock”).
+
+
+**Ethical use.** The dataset consists of aggregated, de-identified counts without PII; no patient-level identifiers are present, aligning with course requirements for ethical, public data.
+
+
+# Variables description
+
+**Key columns:**  
+`date` (daily), `granularity` (country, region, department), `location_code` (location code), `location_name` (location name).
+
+**Indicators:**  
+- `hospitalized` - current hospitalized patients  
+- `icu_patients` - current ICU patients  
+- `deaths` - cumulative deaths  
+- `recovered` - cumulative recoveries  
+- `new_hospitalizations` - new daily hospital admissions  
+- `new_icu_admissions` - new daily ICU admissions  
+
+**Additional fields:**  
+`confirmed_cases` and `tested` may be present with different levels of completeness.  
+**Note:** Due to several missing/invalid values (NaN/Inf), the `tested` column is largely unusable for analysis and is excluded from primary summaries and plots.
+
+**Source metadata:**  
+`source_name`, `source_url`, `source_archive`, `source_type`.
+
+```{r results='hide'}
+df <- readr::read_csv("https://drive.google.com/uc?export=download&id=1rXHdGEDWFAMaitmkNSgehAt_e2FaC_PZ", show_col_types = FALSE)
+
+df <- df |>
+  dplyr::mutate(
+    granularity = dplyr::recode(granularity,
+      "pays" = "country",
+      "departement" = "department",
+      "collectivite-outremer" = "overseas_collectivity",
+      "monde" = "world",
+      "region" = "region"
+    )
+  )
+
+
+# Coerce likely numeric metrics
+num_cols <- intersect(
+  c("hospitalized","icu_patients","deaths","recovered",
+    "new_hospitalizations","new_icu_admissions",
+    "confirmed_cases","tested"),
+  names(df)
+)
+df <- df |>
+  mutate(
+    date = as.Date(date),
+    across(all_of(num_cols), ~suppressWarnings(as.numeric(.)))
+  )
+
+# Overview table for structure (TABLE ONLY)
+gran_counts <- df |>
+  count(granularity, name = "n") |>
+  arrange(desc(n))
+
+# Flattened numeric summary table (no list-columns)
+summary_table <- df |>
+  summarize(across(
+    all_of(num_cols),
+    list(
+      n = ~sum(!is.na(.x)),
+      mean = ~mean(.x, na.rm = TRUE),
+      sd = ~sd(.x, na.rm = TRUE),
+      median = ~median(.x, na.rm = TRUE),
+      min = ~min(.x, na.rm = TRUE),
+      max = ~max(.x, na.rm = TRUE)
+    ),
+    .names = "{.col}_{.fn}"
+  )) |>
+  pivot_longer(
+    everything(),
+    names_to = c("variable","stat"),
+    names_sep = "_(?=[^_]+$)",
+    values_to = "value"
+  ) |>
+  pivot_wider(names_from = "stat", values_from = "value") |>
+  arrange(variable)
 ```
+
+```{r}
+kable(gran_counts, caption = "Row counts by geographic granularity")
+kable(summary_table, digits = 3, caption = "Summary statistics for key numeric indicators")
+```
+
+# Research question(s)
+
+1. **National waves:** How did France’s national hospitalization and ICU occupancy evolve across early pandemic waves (2020-2021)?  
+2. **Flow-stock timing:** Do peaks in new hospital admissions precede peaks in current hospitalizations, and by roughly how many days?
+
+# Data cleanup and processing plan
+
+- **Parsing and types:** Ensure the `date` field is properly parsed as a date variable and convert indicator fields into numeric types for consistency.
+
+- **Subsetting:** For national trends, include only rows classified as country with `location_code` = "FRA". For geographic comparisons, restrict the dataset to rows where `granularity` is region.
+
+- **Missingness:** Quantify missing values for each column and handle them transparently by applying listwise deletion for plotted series (no imputation).
+
+- **Duplicates:** Identify and remove duplicate entries defined by the combination of `date` and `location_code`.
+
+- **Provenance:** Retain all source metadata fields, and include them in the appendix when relevant for transparency.
+
+# Descriptive statistics (figures in Appendix)
+
+France’s national indicators exhibit multi-wave patterns during 2020-2021. Hospital occupancy and ICU burden rise and fall in tandem with case surges, while cumulative deaths increase monotonically. The timing relationship between new admissions (flow) and current occupancy (stock) suggests admissions lead occupancy by several days. For visuals supporting these statements, see Appendix Figures A1-A3. Tables above summarize structure and central tendencies.
+
+Across all rows, the median current hospitalizations was `r round(median(df$hospitalized, na.rm = TRUE))`, with an IQR of `r paste(round(quantile(df$hospitalized, probs = c(.25,.75), na.rm = TRUE)), collapse = "-")`; ICU occupancy had a much lower median, which is expected since ICU is a subset of the total hospital (median `r round(median(df$icu_patients, na.rm = TRUE))`), consistent with ICU being a subset of total hospital burden.
+
+# Planned statistical methods
+
+- **Lagged cross-correlation** between `new_hospitalizations` (flow) and `hospitalized` (stock) to estimate lead time from admissions to occupancy.  
+- **Regional comparison** of ICU vs hospital burden by wave period (medians, IQRs).  
+- **Simple time-series decomposition** on national hospitalizations to separate trend/seasonal/residual components (if applicable).
+
+
+# Limitations
+
+Several fields like `tested` and early `confirmed_cases` have bad coverage over time, and indicators are hospital-centric rather than community-representative. Counts are aggregated and de-identified, so patient-level cannot be controlled. Because the dataset mixes granularities (national, regional, departmental), comparing across levels requires careful subsetting (`granularity == "country"` for national trends). These constraints limit causal interpretation, so we have to focus more on descriptive trends and clearly labeled comparisons.
+
+# Appendix
+
+```{r results='hide'}
+national <- df |>
+  filter(granularity == "country", location_code == "FRA") |>
+  arrange(date)
+
+plot_series <- function(data, y, title_txt, ylab_txt = "Count") {
+  ggplot(data, aes(x = date, y = .data[[y]])) +
+    geom_line(color = "blue", linewidth = 0.8) +
+    scale_x_date(date_breaks = "2 months",
+                 date_labels = "%Y-%m",
+                 expand = expansion(mult = c(0.01, 0.01))) +
+    labs(x = "Date", y = ylab_txt, title = title_txt) +
+    theme_minimal(base_size = 10) +
+    theme(
+      plot.title = element_text(hjust = 0.5),
+      axis.title.y = element_text(margin = margin(r = 6))
+    )
+}
+
+```
+
+```{r echo=FALSE, fig.cap="France (national): Hospitalized (current) over time."}
+if (all(c("hospitalized") %in% names(national))) {
+  plot_series(national, "hospitalized", "France (national): Hospitalized (current) over time", ylab_txt = "Patients")
+}
+```
+
+```{r echo=FALSE, fig.cap="France (national): ICU (current) over time."}
+if (all(c("icu_patients") %in% names(national))) {
+  plot_series(national, "icu_patients", "France (national): ICU (current) over time", ylab_txt = "Patients in ICU")
+}
+```
+
+```{r echo=FALSE, fig.cap="France (national): Cumulative deaths over time."}
+if (all(c("deaths") %in% names(national))) {
+  plot_series(national, "deaths", "France (national): Cumulative deaths over time", ylab_txt = "Deaths (cumulative)")
+}
+```
+
+\FloatBarrier
+\newpage
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ) JOINT PROJECTS - References
+Project 1 - Our World in Data. "Coronvirus Pandemic (COVID-19) dataset." source location - Source: URL: https://docs.owid.io/projects/covid/en/latest/dataset.html 
+Project 2 - mclikmb4, (2021, April 4), Coronavirus-dataset France, Kaggle, <https://www.kaggle.com/datasets/mclikmb4/coronavirusdataset-france?select=chiffres-cles.csv> 
+
+# ) PROJECTS - Appendix
+## Project 1
+
+## Project 2
+
+```{r results='hide'}
+national <- df |>
+  filter(granularity == "country", location_code == "FRA") |>
+  arrange(date)
+
+plot_series <- function(data, y, title_txt, ylab_txt = "Count") {
+  ggplot(data, aes(x = date, y = .data[[y]])) +
+    geom_line(color = "blue", linewidth = 0.8) +
+    scale_x_date(date_breaks = "2 months",
+                 date_labels = "%Y-%m",
+                 expand = expansion(mult = c(0.01, 0.01))) +
+    labs(x = "Date", y = ylab_txt, title = title_txt) +
+    theme_minimal(base_size = 10) +
+    theme(
+      plot.title = element_text(hjust = 0.5),
+      axis.title.y = element_text(margin = margin(r = 6))
+    )
+}
+
+```
+
+```{r echo=FALSE, fig.cap="France (national): Hospitalized (current) over time."}
+if (all(c("hospitalized") %in% names(national))) {
+  plot_series(national, "hospitalized", "France (national): Hospitalized (current) over time", ylab_txt = "Patients")
+}
+```
+
+```{r echo=FALSE, fig.cap="France (national): ICU (current) over time."}
+if (all(c("icu_patients") %in% names(national))) {
+  plot_series(national, "icu_patients", "France (national): ICU (current) over time", ylab_txt = "Patients in ICU")
+}
+```
+
+```{r echo=FALSE, fig.cap="France (national): Cumulative deaths over time."}
+if (all(c("deaths") %in% names(national))) {
+  plot_series(national, "deaths", "France (national): Cumulative deaths over time", ylab_txt = "Deaths (cumulative)")
+}
+```
+
+
+
