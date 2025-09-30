@@ -44,7 +44,9 @@ suppressPackageStartupMessages({
 dataset_one_URL <- "https://docs.owid.io/projects/covid/en/latest/dataset.html"
 dataset_one_URL # to print the URL for the PDF
 
-data1 <- readr::read_csv("https://drive.google.com/uc?export=download&id=1D3Bka-78tuEbXn7XXxgYoSssHoy2DKpf", show_col_types = FALSE)
+# Read directly from OWID's public CSV (no local copy)
+owid_csv <- "https://covid.ourworldindata.org/data/owid-covid-data.csv"
+data1 <- readr::read_csv(owid_csv, show_col_types = FALSE, progress = FALSE)
 
 c(n_rows = nrow(data1), n_cols = ncol(data1))
 head(names(data1), 12)
