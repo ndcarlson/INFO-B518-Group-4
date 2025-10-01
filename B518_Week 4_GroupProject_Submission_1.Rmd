@@ -611,6 +611,8 @@ As the project progresses, I plan to use chi-square tests to assess associations
 
 # Limitations
 
+This analysis is subject to several important limitations. The primary being the lack of precise definitions for certain variables. For example the variable 'Diet' is listed as only Helathy/Average/Unhealthy. The reason this matters is that without a clear defitinition explaining the meaning then these labels lose their potency. We don't know if healthy was determined by a food agency or is it a simple subjective checkbox.
+
 # Appendix - Project Three
 
 ```{r}
