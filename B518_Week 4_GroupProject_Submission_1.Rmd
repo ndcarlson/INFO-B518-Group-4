@@ -45,7 +45,7 @@ suppressPackageStartupMessages({
 dataset_one_URL <- "https://docs.owid.io/projects/covid/en/latest/dataset.html"
 dataset_one_URL # to print the URL for the PDF
 
-
+data1 <- read.csv("data/raw/coviddata.csv")
 
 c(n_rows = nrow(data1), n_cols = ncol(data1))
 head(names(data1), 12)
