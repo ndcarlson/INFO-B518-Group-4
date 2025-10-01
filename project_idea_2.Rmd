@@ -34,9 +34,9 @@ suppressPackageStartupMessages({
 
 # Link to the dataset
 
-Kaggle - Coronavirusdataset France (file: `chiffres-cles.csv`)  
-Actual URL: <https://www.kaggle.com/datasets/mclikmb4/coronavirusdataset-france?select=chiffres-cles.csv>  
-Google drive URL: <https://drive.google.com/file/d/1rXHdGEDWFAMaitmkNSgehAt_e2FaC_PZ/view?usp=sharing>
+**Kaggle** - Coronavirusdataset France (file: `chiffres-cles.csv`)  
+**Actual URL:** <https://www.kaggle.com/datasets/mclikmb4/coronavirusdataset-france?select=chiffres-cles.csv>  
+**Google drive URL:** <https://drive.google.com/file/d/1rXHdGEDWFAMaitmkNSgehAt_e2FaC_PZ/view?usp=sharing>
 
 # Introduction to the dataset
 
@@ -221,3 +221,4 @@ if (all(c("deaths") %in% names(national))) {
 
 
 mclikmb4, (2021, April 4), Coronavirus-dataset France, Kaggle, <https://www.kaggle.com/datasets/mclikmb4/coronavirusdataset-france?select=chiffres-cles.csv> 
+
