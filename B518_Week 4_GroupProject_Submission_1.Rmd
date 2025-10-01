@@ -512,49 +512,6 @@ if (all(c("deaths") %in% names(national))) {
 }
 ```
 
-## Project 2 (THIS GOT MOVED FROM THE JOINT AREA - NICK TO CHECK)
-
-```{r results='hide'}
-national <- df |>
-  filter(granularity == "country", location_code == "FRA") |>
-  arrange(date)
-
-plot_series <- function(data, y, title_txt, ylab_txt = "Count") {
-  ggplot(data, aes(x = date, y = .data[[y]])) +
-    geom_line(color = "blue", linewidth = 0.8) +
-    scale_x_date(date_breaks = "2 months",
-                 date_labels = "%Y-%m",
-                 expand = expansion(mult = c(0.01, 0.01))) +
-    labs(x = "Date", y = ylab_txt, title = title_txt) +
-    theme_minimal(base_size = 10) +
-    theme(
-      plot.title = element_text(hjust = 0.5),
-      axis.title.y = element_text(margin = margin(r = 6))
-    )
-}
-
-```
-
-```{r echo=FALSE, fig.cap="France (national): Hospitalized (current) over time."}
-if (all(c("hospitalized") %in% names(national))) {
-  plot_series(national, "hospitalized", "France (national): Hospitalized (current) over time", ylab_txt = "Patients")
-}
-```
-
-```{r echo=FALSE, fig.cap="France (national): ICU (current) over time."}
-if (all(c("icu_patients") %in% names(national))) {
-  plot_series(national, "icu_patients", "France (national): ICU (current) over time", ylab_txt = "Patients in ICU")
-}
-```
-
-```{r echo=FALSE, fig.cap="France (national): Cumulative deaths over time."}
-if (all(c("deaths") %in% names(national))) {
-  plot_series(national, "deaths", "France (national): Cumulative deaths over time", ylab_txt = "Deaths (cumulative)")
-}
-```
-
-## END OF MOVE FROM JOINT
-
 \FloatBarrier
 \newpage
 
