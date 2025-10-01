@@ -529,7 +529,11 @@ I chose the Heart Attack Prediction Dataset because it directly addresses a crit
 
 # 4. Variables description
 
-Key columns include Patient ID (unique identifier for each record), Age (in years), Sex (male or female), Cholesterol (cholesterol levels in mg/dL), Blood Pressure (systolic/diastolic in mmHg), Heart Rate (beats per minute), and BMI (body mass index, kg/m²). Clinical indicators capture Diabetes status (Yes/No), Family History of heart problems (1 = Yes, 0 = No), Previous Heart Problems (1 = Yes, 0 = No), Medication Use (1 = Yes, 0 = No), and Triglyceride levels (mg/dL). Lifestyle-related attributes include Smoking (1 = Smoker, 0 = Non-smoker), Obesity (1 = Obese, 0 = Not obese), Alcohol Consumption (None, Light, Moderate, Heavy), Diet (Healthy, Average, Unhealthy), Exercise Hours Per Week, Physical Activity Days Per Week, Stress Level (1–10 scale), Sedentary Hours Per Day, and Sleep Hours Per Day. Socioeconomic and demographic fields consist of Income, Country, Continent, and Hemisphere. The target variable, Heart Attack Risk, is a binary indicator (1 = Yes, 0 = No) denoting whether the patient is at risk of a heart attack.
+Key columns include Patient ID (unique identifier for each record), Age (in years), Sex (male or female), Cholesterol (cholesterol levels in mg/dL), Blood Pressure (systolic/diastolic in mmHg), Heart Rate (beats per minute), and BMI (body mass index, kg/m²). Clinical indicators capture Diabetes status (Yes/No), Family History of heart problems (1 = Yes, 0 = No), Previous Heart Problems (1 = Yes, 0 = No), Medication Use (1 = Yes, 0 = No), and Triglyceride levels (mg/dL).
+
+Lifestyle-related attributes include Smoking (1 = Smoker, 0 = Non-smoker), Obesity (1 = Obese, 0 = Not obese), Alcohol Consumption (None, Light, Moderate, Heavy), Diet (Healthy, Average, Unhealthy), Exercise Hours Per Week, Physical Activity Days Per Week, Stress Level (1–10 scale), Sedentary Hours Per Day, and Sleep Hours Per Day. Socioeconomic and demographic fields consist of Income, Country, Continent, and Hemisphere. 
+
+The target variable, Heart Attack Risk, is a binary indicator (1 = Yes, 0 = No) denoting whether the patient is at risk of a heart attack.
 
 ```{r}
 # Load ggplot2 for visualizations
@@ -567,7 +571,6 @@ ggplot(hd, aes(x = factor(Smoking))) +
 # 5. Research questions
 1. Which clinical, lifestyle, and demographic factors are most strongly associated with the risk of heart attack in patients?
 
-
 2. Which features contribute most to a machine learning model’s decision boundary for predicting heart attack risk?
 
 # 6. Data cleanup and processing plan
@@ -585,6 +588,7 @@ ggplot(hd, aes(x = factor(Smoking))) +
 - Create derived variables: Add new groupings such as Age Groups (e.g., 18–30, 31–50, 51–70, 71–90) and BMI Categories (Underweight, Normal, Overweight, Obese) to facilitate group comparisons in descriptive statistics and visualization.
 
 # 7. Descriptive statistics and data visualizations
+
 
 ```{r}
 
@@ -635,8 +639,6 @@ print(cols_split$numerical)
 
 ```
 
-
-
 ```{r}
 # Load dataset
 hd <- read.csv("data/raw/heart_attack_prediction_dataset.csv")
@@ -662,16 +664,11 @@ print(numeric_summary)
 
 As the project progresses, I plan to use chi-square tests to assess associations between categorical factors (e.g., smoking, diabetes) and heart attack risk, and t-tests/ANOVA to compare continuous measures (e.g., cholesterol, BMI) across groups. To build predictive insight, I will apply logistic regression and may explore machine learning models such as decision trees or random forests. These methods will help identify key risk factors and evaluate their predictive power.
 
+# 9. Limitations
 
-# 9. Appendix
+# 10. Appendix
 
 # ) JOINT PROJECTS - References
-Project 1 - Our World in Data. "Coronvirus Pandemic (COVID-19) dataset." source location - Source: URL: https://docs.owid.io/projects/covid/en/latest/dataset.html 
+Project 1 - Our World in Data. (2024). Coronvirus Pandemic (COVID-19) dataset. <https://docs.owid.io/projects/covid/en/latest/dataset.html>
 Project 2 - mclikmb4, (2021, April 4), Coronavirus-dataset France, Kaggle, <https://www.kaggle.com/datasets/mclikmb4/coronavirusdataset-france?select=chiffres-cles.csv> 
-
 Project 3 - Banerjee, S. (2021). Heart Attack Prediction Dataset. Kaggle. https://www.kaggle.com/datasets/iamsouravbanerjee/heart-attack-prediction-dataset
-
-# ) PROJECTS - Appendix
-
-
-
