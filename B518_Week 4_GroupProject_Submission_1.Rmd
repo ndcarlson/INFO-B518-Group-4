@@ -52,6 +52,21 @@ head(names(data1), 12)
 
 u <- unique(data1$country)
 u[grepl("United|USA|UK", u, ignore.case = TRUE)]
+
+#Size
+c(n_rows = nrow(data1), n_cols = ncol(data1))
+
+#Column Names
+head(names(data1))
+
+#Types
+table(sapply(data1, function(x) class(x)[1]))
+
+#quick analysis
+
+str(data1, list.len = 20)
+head(data1, 10)
+summary(data1)
 ```
 
 
@@ -71,24 +86,6 @@ A list of all the fields:
 - "new_cases", "new_cases_smoothed", "new_cases_per_million", "new_cases_smoothed_per_million"
 - "total_deaths", "new_deaths", "new_deaths_smoothed", "total_deaths_per_million" 
   
-```{r echo=FALSE, results='hide', Variables_and_structure}
-
-#Size
-c(n_rows = nrow(data1), n_cols = ncol(data1))
-
-#Column Names
-head(names(data1))
-
-#Types
-table(sapply(data1, function(x) class(x)[1]))
-
-#quick analysis
-
-str(data1, list.len = 20)
-head(data1, 10)
-summary(data1)
-
-```
 ## 5) Research questions
 - 1. What share of days exceed a threshold (to simulated a government policy threshold to "flatten the curve") e.g 50 cases per million in each country
 - 2. Which of the selected countries had the highest typical daily new cases per million in 2021
@@ -131,7 +128,6 @@ d1_21_f$country <- factor (d1_21_f$country, levels = keep_countries)
 ## 8) Planned statisical methods
 To formally test for differences in the median daily new cases between the four countries, we plan to use a non-parametric test such as the Kruskal-Wallis test, given the skewed nature of the data. Further analysis could involve using correlation to explore the relationship between vaccination rates and new cases over time for each country. 
 
-  
 ## 9) Limitations
 - Measurement differences - countries have different reporting rules, testing cadence & breadth.
 - Scope - Only 2021 was analysed. Other years or waves of the disease may show other patterns. 
