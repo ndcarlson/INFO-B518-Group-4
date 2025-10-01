@@ -33,8 +33,8 @@ suppressPackageStartupMessages({
 ```
 
 # Project Idea One - Covid 19 (2021 ONLY - USA, UK, China, Belgium)
-## 1) Original Source: URL: https://docs.owid.io/projects/covid/en/latest/dataset.html
-## 2) Dataset moved:  https://catalog.ourworldindata.org/garden/covid/latest/compact/compact.csv
+## Original Source: URL: https://docs.owid.io/projects/covid/en/latest/dataset.html
+## Dataset moved:  https://catalog.ourworldindata.org/garden/covid/latest/compact/compact.csv
 
 ### Selection Criteria:
 #### The data (see above) does meet the criteria of the assignment. In that it is relevant to health, publically accessible, sizable (61 columns and 530,292 rows), includes both categorical (e.g. country) and continuous variables (e.g. new_cases_per_million, total_deaths_per_million) and finally has been ethically sourced and de-identified. 
@@ -62,6 +62,9 @@ This project uses Covid 19 data from 'Our world in data'. We use this to primari
  This dataset is highly relevant to health outcomes. The dataset is also very well documented, large (61 columns and 530k rows). For analysis potential, this dataset has both continuous fields (total_deaths_per_million, new_cases_per_million)  and categorical (e.g. Country), feasible for tables, histograms, boxplots, time trends. Using the fields with the suffix "per_million" allows better scaling for cross country comparisons and summaries. 
   
 ## 4) Variables and structure
+This analysis focuses on a few key variables from the dataset. The primary categorical variable is 'country', which we have filtered to four specific nations. The main continous variable is 'new_cases_per_million', which allows for a fair comparison of infection rates by account for population differences. Finally, the 'date' variable was used to filter the data to the 2021 calendar year. 
+
+A list of all the fields:"country", "date", "total_cases", "new_cases", "new_cases_smoothed", "total_cases_per_million", "new_cases_per_million", "new_cases_smoothed_per_million", "total_deaths", "new_deaths", "new_deaths_smoothed", "total_deaths_per_million" 
   
 ```{r echo=FALSE, results='hide', Variables_and_structure}
 
@@ -328,7 +331,7 @@ legend("topleft",
 ```
   
 ## 8) Planned statisical methods
-We will compare 2021 distrubutions of 'new_cases_per_million' across the four countries using.... 
+To formally test for differences in the median daily new cases between the four countries, we plan to use a non-parametric test such as the Kruskal-Wallis test, given the skewed nature of the data. Further analysis could involve using correlation to explore the relationship between vaccination rates and new cases over time for each country. 
 
   
 ## 9) Limitations
