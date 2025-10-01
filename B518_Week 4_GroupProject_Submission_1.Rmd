@@ -45,9 +45,7 @@ suppressPackageStartupMessages({
 dataset_one_URL <- "https://docs.owid.io/projects/covid/en/latest/dataset.html"
 dataset_one_URL # to print the URL for the PDF
 
-#data1 <- readr::read_csv("https://drive.google.com/uc?export=download&id=1D3Bka-78tuEbXn7XXxgYoSssHoy2DKpf", show_col_types = FALSE)
-
-data1 <- read.csv("data/raw/coviddata.csv", stringsAsFactors = FALSE)
+data1 <- readr::read_csv("https://catalog.ourworldindata.org/garden/covid/latest/compact/compact.csv" , show_col_types = FALSE, progress = FALSE)
 
 c(n_rows = nrow(data1), n_cols = ncol(data1))
 head(names(data1), 12)
@@ -343,9 +341,9 @@ We will compare 2021 distrubutions of 'new_cases_per_million' across the four co
 # Project Idea Two - Covid 19 Hospitalizations in France
 # Link to the dataset
 
-Kaggle - Coronavirusdataset France (file: `chiffres-cles.csv`)  
-Actual URL: <https://www.kaggle.com/datasets/mclikmb4/coronavirusdataset-france?select=chiffres-cles.csv>
-Google drive URL: <https://drive.google.com/file/d/1rXHdGEDWFAMaitmkNSgehAt_e2FaC_PZ/view?usp=sharing>
+**Kaggle** - Coronavirusdataset France (file: `chiffres-cles.csv`)  
+**Actual URL:** <https://www.kaggle.com/datasets/mclikmb4/coronavirusdataset-france?select=chiffres-cles.csv>  
+**Google drive URL:** <https://drive.google.com/file/d/1rXHdGEDWFAMaitmkNSgehAt_e2FaC_PZ/view?usp=sharing>
 
 # Introduction to the dataset
 
