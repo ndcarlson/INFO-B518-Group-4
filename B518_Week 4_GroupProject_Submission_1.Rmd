@@ -41,7 +41,7 @@ suppressPackageStartupMessages({
 
 
 
-```{r dataset_one_import}
+```{r echo=FALSE, dataset_one_import}
 dataset_one_URL <- "https://docs.owid.io/projects/covid/en/latest/dataset.html"
 dataset_one_URL # to print the URL for the PDF
 
@@ -65,7 +65,7 @@ This project uses Covid 19 data from 'Our world in data'. We use this to primari
   
 ## 4) Variables and structure
   
-```{r Variables_and_structure}
+```{r echo=FALSE, results='hide', Variables_and_structure}
 
 #Size
 c(n_rows = nrow(data1), n_cols = ncol(data1))
@@ -90,7 +90,7 @@ summary(data1)
 
 ## 6) Data clean up & Processing plan
 We parsed the date field and derived a 'year' variable, then restricted the dataset to 2021 to keep figures more legible and comparable. We fixed our analysis to a small set of countries (United States, United Kingdom, China, Belgium) and then verified each has sufficient non missing values for 'new_cases_per_million' in 2021. this processing prepares the data for descriptive statistics and many visualisations.    
-```{r data_clean_up}
+```{r echo=FALSE, data_clean_up}
 
 #check year is available & parse
 data1$date <- as.Date(data1$date)
@@ -123,7 +123,7 @@ d1_21_f$country <- factor (d1_21_f$country, levels = keep_countries)
  We summarise categories (counts/proportions), report center & spread for one mumeric variable and add simple plots to visualise patterns 
 ### 7.1) One-Way frequency table (categorical)
  Counts and proportions for a categorical variable 
-```{r onewaytable}
+```{r echo=FALSE, onewaytable}
 # Counts and proportions for country
 tab_country <- table(d1_21_f$country)
 prop_country <- prop.table(tab_country)
@@ -136,7 +136,7 @@ round(prop_country, 3)
 
 ### 7.2) Bar Chart of Disease.Category (counts)
  Bar chart / Bar plot of disease category by count 
-```{r barplot}
+```{r echo=FALSE, barplot}
 # Bar chart / Bar plot of disease category by count
 med_cases <- tapply(d1_21_f$new_cases_per_million,
                     d1_21_f$country,
@@ -154,7 +154,7 @@ barplot(med_cases,
 
 ### 7.3) Two way table (category by category)
   
-```{r twowaytable}
+```{r echo=FALSE, twowaytable}
 # Cross-tab and row/column proportions
 threshold <- 50
 
@@ -178,7 +178,7 @@ row_high
 
 ### 7.4) Center & Spread (overall, selected countries, 2021)
   
-```{r center_and_spread}
+```{r echo=FALSE, center_and_spread}
 
 
 
@@ -219,7 +219,7 @@ print(by_summ)
 
 ### 7.5) Histogram (shape of the distrubution)
   
-```{r histogram}
+```{r echo=FALSE, histogram}
 
 #Dropping NA's
 x <- d1_21_f$new_cases_per_million
@@ -255,7 +255,7 @@ legend("topright",
 
 ### 7.6) Boxplot (numeric by category)
  Boxplot (Mortality rate by category) 
-```{r boxplot}
+```{r echo=FALSE, boxplot}
 # Boxplot
 
   # Order by median
@@ -295,7 +295,7 @@ legend("topright",
 
 ### 7.7) Simple time trend (average by year)
   
-```{r timetrend}
+```{r echo=FALSE, timetrend}
 
 #month index
 d1_21_f$month_num <- as.integer(format(d1_21_f$date, "%m"))
