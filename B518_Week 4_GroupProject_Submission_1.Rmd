@@ -37,7 +37,7 @@ suppressPackageStartupMessages({
 # Selection Criteria:
 The data (see above) does meet the criteria of the assignment. In that it is relevant to health, publically accessible, sizable (61 columns and 530,292 rows), includes both categorical (e.g. country) and continuous variables (e.g. new_cases_per_million, total_deaths_per_million) and finally has been ethically sourced and de-identified. 
 
-```{r echo=FALSE, results='hide', dataset_one_import}
+```{r echo=FALSE, dataset_one_import}
 dataset_one_URL <- "https://docs.owid.io/projects/covid/en/latest/dataset.html"
 dataset_one_URL # to print the URL for the PDF
 
@@ -61,7 +61,6 @@ table(sapply(data1, function(x) class(x)[1]))
 #quick analysis
 
 str(data1, list.len = 20)
-head(data1, 10)
 summary(data1)
 ```
 # Introduction
@@ -71,6 +70,9 @@ This project uses Covid 19 data from 'Our world in data'. We use this to primari
 **Relevance:** Directly biomedical/public-health, reflecting real-world cases and death metrics during COVID-19.
 
 **Size/structure:** The file far exceeds the minimum requirements (61 columns and 530k rows) and includes both categorical (e.g. Country) and continuous fields (total_deaths_per_million, new_cases_per_million)
+
+**Source Location:** https://docs.owid.io/projects/covid/en/latest/dataset.html
+**Raw data Location:** https://catalog.ourworldindata.org/garden/covid/latest/compact/compact.csv
 
 **Accessibility/ethics:** Publicly accessible aggregated, de-identified counts suitable for academic use.
 
@@ -125,7 +127,86 @@ d1_21_f$country <- factor (d1_21_f$country, levels = keep_countries)
 ```
 
 # Descriptive statistics (figures in Appendix)
- We summarise categories (counts/proportions), report center & spread for one mumeric variable and add simple plots to visualise patterns 
+ Our descriptive analysis for 2021 reveals starkly different pandemic experiences among the four selected countries. The most significant finding is the extreme contrast between China, which reported virtually no community spread, and the western nations all expereicned substantial waves of the Covid virus. 
+ 
+ Answering our first research question, the two way frequency shows that China had reported zero days exceeding a 50 new cases per million threshold. In contrast this threshold was crossed 94.% of days in Belgium, 89.9% in the USA and 84.9% in the UK. 
+ 
+ For our second question, the summary statistics table identified the UK as having the highesy typical daily caseload, with a median of 421.6 new cases per million, nearly double that of the USA at 218.4. The overall distrubution o cases is heavily right skewed, a pattern confirmed visually by the histogram and the numerous high end outliers visibl in the boxplot. 
+ 
+ Lastly, for our third research question. the time trend plot issustrates how these case rates evolved monthly. China's rate remained flat, the US, UK and Belgium all expereicned a summer drop followed by a big surge in Q4 of 2021. 
+ 
+## Boxplot (numeric by category)
+Boxplot (Mortality rate by category) 
+```{r echo=FALSE, boxplot}
+# Boxplot
+
+  # Order by median
+  d1_21_f$country <- reorder(d1_21_f$country, d1_21_f$new_cases_per_million, median, na.rm = TRUE)
+
+  # % of high days per country
+  ## Reusing previously set threshold of '50'
+  
+  d_tmp <- subset(d1_21_f, !is.na(new_cases_per_million))
+  pct_high <- tapply(d_tmp$new_cases_per_million > threshold,
+                     d_tmp$country, function(z) mean(z, na.rm = TRUE))
+  pct_high <- round(100 * pct_high[levels(d1_21_f$country)], 0)
+
+  
+  lab <- paste0(levels(d1_21_f$country), "\n", pct_high, "% >", threshold)
+  
+  #Box plot
+  bp <- boxplot(new_cases_per_million ~ country, data = d1_21_f,
+          names = lab,
+          main = "Daily new cases per million, by country in 2021",
+          ylab = "New cases per Million",
+          xlab = "Country",
+          col = "lightgreen",
+          las = 2, 
+          outline = TRUE,
+          border = "purple")
+  
+  #Percentiles
+  q <- quantile(d1_21_f$new_cases_per_million, probs = c(0.25, 0.5, 0.75), na.rm = TRUE)
+
+  # Adding a horizontal line for the quarters
+  abline(h = q, col = c("blue", "red", "orange"), lty = c(2, 3, 2))
+  
+```
+## Time trend (average by year)
+
+```{r echo=FALSE, timetrend}
+
+#month index
+d1_21_f$month_num <- as.integer(format(d1_21_f$date, "%m"))
+
+# Monthly means by country
+m_means <- aggregate(new_cases_per_million ~ country + month_num,
+                     data = d1_21_f, FUN = function(z) mean(z, na.rm = TRUE))
+
+
+countries = c("United States", "United Kingdom", "China","Belgium")
+mat <- with (m_means, tapply(new_cases_per_million, list(month_num, country), mean))
+mat <- mat[1:12, countries, drop = FALSE]
+
+# Set highest point to scale chart
+y_max <- max(mat, na.rm = TRUE)
+
+plot(1:12, mat[, "United States"], type = "l", lwd = 2,
+     xaxt = "n", xlab = "Month in 2021",
+     ylab = "mean new cases per million",
+     main = "Monthly mean new cases per million",
+     ylim = c(0, y_max * 1.1))
+
+axis(1, at = 1:12, labels = month.abb)
+lines(1:12, mat[, "United Kingdom"], lwd = 2)
+lines(1:12, mat[, "China"], lwd = 2)
+lines(1:12, mat[, "Belgium"], lwd = 2)
+
+legend("topleft",
+       legend = countries, 
+       lwd = 2, bty = "n")
+
+```
 
 # Planned statisical methods
 To formally test for differences in the median daily new cases between the four countries, we plan to use a non-parametric test such as the Kruskal-Wallis test, given the skewed nature of the data. Further analysis could involve using correlation to explore the relationship between vaccination rates and new cases over time for each country. 
@@ -254,78 +335,7 @@ legend("topright",
        lty = c(1, 2))
 
 ```
-## Boxplot (numeric by category)
-Boxplot (Mortality rate by category) 
-```{r echo=FALSE, boxplot}
-# Boxplot
 
-  # Order by median
-  d1_21_f$country <- reorder(d1_21_f$country, d1_21_f$new_cases_per_million, median, na.rm = TRUE)
-
-  # % of high days per country
-  ## Reusing previously set threshold of '50'
-  
-  d_tmp <- subset(d1_21_f, !is.na(new_cases_per_million))
-  pct_high <- tapply(d_tmp$new_cases_per_million > threshold,
-                     d_tmp$country, function(z) mean(z, na.rm = TRUE))
-  pct_high <- round(100 * pct_high[levels(d1_21_f$country)], 0)
-
-  
-  lab <- paste0(levels(d1_21_f$country), "\n", pct_high, "% >", threshold)
-  
-  #Box plot
-  bp <- boxplot(new_cases_per_million ~ country, data = d1_21_f,
-          names = lab,
-          main = "Daily new cases per million, by country in 2021",
-          ylab = "New cases per Million",
-          xlab = "Country",
-          col = "lightgreen",
-          las = 2, 
-          outline = TRUE,
-          border = "purple")
-  
-  #Percentiles
-  q <- quantile(d1_21_f$new_cases_per_million, probs = c(0.25, 0.5, 0.75), na.rm = TRUE)
-
-  # Adding a horizontal line for the quarters
-  abline(h = q, col = c("blue", "red", "orange"), lty = c(2, 3, 2))
-  
-```
-## Simple time trend (average by year)
-
-```{r echo=FALSE, timetrend}
-
-#month index
-d1_21_f$month_num <- as.integer(format(d1_21_f$date, "%m"))
-
-# Monthly means by country
-m_means <- aggregate(new_cases_per_million ~ country + month_num,
-                     data = d1_21_f, FUN = function(z) mean(z, na.rm = TRUE))
-
-
-countries = c("United States", "United Kingdom", "China","Belgium")
-mat <- with (m_means, tapply(new_cases_per_million, list(month_num, country), mean))
-mat <- mat[1:12, countries, drop = FALSE]
-
-# Set highest point to scale chart
-y_max <- max(mat, na.rm = TRUE)
-
-plot(1:12, mat[, "United States"], type = "l", lwd = 2,
-     xaxt = "n", xlab = "Month in 2021",
-     ylab = "mean new cases per million",
-     main = "Monthly mean new cases per million",
-     ylim = c(0, y_max * 1.1))
-
-axis(1, at = 1:12, labels = month.abb)
-lines(1:12, mat[, "United Kingdom"], lwd = 2)
-lines(1:12, mat[, "China"], lwd = 2)
-lines(1:12, mat[, "Belgium"], lwd = 2)
-
-legend("topleft",
-       legend = countries, 
-       lwd = 2, bty = "n")
-
-```
 \FloatBarrier
 \newpage 
 
@@ -593,8 +603,15 @@ ggplot(hd, aes(x = factor(Smoking))) +
 # Descriptive statistics (figures in Appendix)
 
 
-```{r}
+# Planned statistical methods
 
+As the project progresses, I plan to use chi-square tests to assess associations between categorical factors (e.g., smoking, diabetes) and heart attack risk, and t-tests/ANOVA to compare continuous measures (e.g., cholesterol, BMI) across groups. To build predictive insight, I will apply logistic regression and may explore machine learning models such as decision trees or random forests. These methods will help identify key risk factors and evaluate their predictive power.
+
+# Limitations
+
+# Appendix - Project Three
+
+```{r}
 # Load dataset
 hd <- read.csv("data/raw/heart_attack_prediction_dataset.csv")
 
@@ -614,10 +631,9 @@ for (var in continuous_vars) {
 categorical_vars <- c("Sex", "Diabetes", "Family.History", "Smoking", "Obesity","Alcohol.Consumption", "Diet", "Previous.Heart.Problems","Medication.Use", "Country", "Continent", "Hemisphere","Heart.Attack.Risk")
 
 for (var in categorical_vars) {
-  cat("\nVariable:", var, "\n")
-  print(table(hd[[var]]))             
+cat("\nVariable:", var, "\n")
+print(table(hd[[var]]))             
 }
-
 ```
 
 ```{r}
@@ -628,7 +644,7 @@ separate_columns_by_dtype <- function(data) {
   return(list(categorical = categorical_cols, numerical = numerical_cols))
 }
 
-# Example usage
+# refresh dataset
 hd <- read.csv("data/raw/heart_attack_prediction_dataset.csv", stringsAsFactors = FALSE)
 
 cols_split <- separate_columns_by_dtype(hd)
@@ -662,14 +678,6 @@ numeric_summary <- data.frame(
 print(numeric_summary)
 
 ```
-
-# Planned statistical methods
-
-As the project progresses, I plan to use chi-square tests to assess associations between categorical factors (e.g., smoking, diabetes) and heart attack risk, and t-tests/ANOVA to compare continuous measures (e.g., cholesterol, BMI) across groups. To build predictive insight, I will apply logistic regression and may explore machine learning models such as decision trees or random forests. These methods will help identify key risk factors and evaluate their predictive power.
-
-# Limitations
-
-# Appendix - Project Three 
 
 # ) JOINT PROJECTS - References
 - Project 1 - Our World in Data. (2024). Coronvirus Pandemic (COVID-19) dataset. <https://docs.owid.io/projects/covid/en/latest/dataset.html>
