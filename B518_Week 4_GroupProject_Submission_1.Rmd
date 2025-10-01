@@ -50,18 +50,18 @@ u <- unique(data1$country)
 u[grepl("United|USA|UK", u, ignore.case = TRUE)]
 
 #Size
-c(n_rows = nrow(data1), n_cols = ncol(data1))
+#c(n_rows = nrow(data1), n_cols = ncol(data1))
 
 #Column Names
-head(names(data1))
+#head(names(data1))
 
 #Types
-table(sapply(data1, function(x) class(x)[1]))
+#table(sapply(data1, function(x) class(x)[1]))
 
 #quick analysis
 
-str(data1, list.len = 20)
-summary(data1)
+#str(data1, list.len = 20)
+#summary(data1)
 ```
 # Introduction
 This project uses Covid 19 data from 'Our world in data'. We use this to primarily compare how daily new cases per million varied across four countries in 2021. We focus on 2021 to keep our comparisons on a common phase of the pandemic. The dataset itself does cover many more countries and years and also includes data on total cases and total deaths. We used the fields that have the suffix 'per_million'as any comparisons scale by population size. 
@@ -109,6 +109,9 @@ d1_21 <- subset(data1, year ==2021)
 
 # lock in selected countries
 keep_countries <- c("United States", "United Kingdom", "China", "Belgium")
+
+# Set Threshold
+threshold <- 50
 
 
 # Only keep countries with enough non missing values for 'new_cases_per_million'
@@ -247,7 +250,6 @@ barplot(med_cases,
   
 ```{r echo=FALSE, twowaytable}
 # Cross-tab and row/column proportions
-threshold <- 50
 
 d_tw <- subset(d1_21_f, !is.na(new_cases_per_million))
 
