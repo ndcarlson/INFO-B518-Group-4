@@ -33,7 +33,8 @@ suppressPackageStartupMessages({
 ```
 
 # Project Idea One - Covid 19 (2021 ONLY - USA, UK, China, Belgium)
-## 1) Source: URL: https://docs.owid.io/projects/covid/en/latest/dataset.html
+## 1) Original Source: URL: https://docs.owid.io/projects/covid/en/latest/dataset.html
+## 2) Dataset moved:  https://catalog.ourworldindata.org/garden/covid/latest/compact/compact.csv
 
 ### Selection Criteria:
 #### The data (see above) does meet the criteria of the assignment. In that it is relevant to health, publically accessible, sizable (61 columns and 530,292 rows), includes both categorical (e.g. country) and continuous variables (e.g. new_cases_per_million, total_deaths_per_million) and finally has been ethically sourced and de-identified. 
@@ -44,7 +45,9 @@ suppressPackageStartupMessages({
 dataset_one_URL <- "https://docs.owid.io/projects/covid/en/latest/dataset.html"
 dataset_one_URL # to print the URL for the PDF
 
-data1 <- readr::read_csv("https://drive.google.com/uc?export=download&id=1D3Bka-78tuEbXn7XXxgYoSssHoy2DKpf", show_col_types = FALSE)
+#data1 <- readr::read_csv("https://drive.google.com/uc?export=download&id=1D3Bka-78tuEbXn7XXxgYoSssHoy2DKpf", show_col_types = FALSE)
+
+data1 <- read.csv("data/raw/coviddata.csv", stringsAsFactors = FALSE)
 
 c(n_rows = nrow(data1), n_cols = ncol(data1))
 head(names(data1), 12)
@@ -525,14 +528,153 @@ if (all(c("deaths") %in% names(national))) {
 
 # Project Idea Three - Heart attack
 
-# DIVYA HERE !!!!!!!
+
+# 1.Link to the dataset
+
+https://www.kaggle.com/datasets/iamsouravbanerjee/heart-attack-prediction-dataset
+
+# 2. Introduction to dataset
+
+The Heart Attack Prediction Dataset, available on Kaggle, is a comprehensive resource for studying the clinical, lifestyle, and demographic factors associated with cardiovascular risk. It consists of 8,763 de-identified patient records, including continuous variables such as age, cholesterol, blood pressure, and heart rate, as well as categorical features like sex, chest pain type, smoking habits, diabetes status, and dietary patterns. Socioeconomic and geographic attributes, including income and region, further enrich the dataset by adding broader context to heart health predictors. The primary outcome variable indicates whether a patient is at risk of a heart attack, making the dataset well-suited for statistical analysis, visualization, and classification tasks. Its diverse mix of variables supports exploration of correlations, risk factors, and group comparisons, while also providing an ethical and accessible foundation for predictive modeling in cardiovascular health research.
+
+# 3. Dataset justification
+
+I chose the Heart Attack Prediction Dataset because it directly addresses a critical biomedical challenge cardiovascular disease which remains one of the leading causes of mortality worldwide. The dataset integrates clinical, lifestyle, and demographic variables, making it highly relevant for exploring the multifactorial nature of heart health. With its balanced mix of categorical and continuous features, it offers strong potential for applying a variety of statistical methods, visualizations, and predictive modeling techniques. Its size and diversity of attributes make it complex enough to yield meaningful insights, yet still manageable for academic analysis. Overall, this dataset provides both real-world relevance and analytical richness, making it an excellent candidate for this project.
+
+# 4. Variables description
+
+Key columns include Patient ID (unique identifier for each record), Age (in years), Sex (male or female), Cholesterol (cholesterol levels in mg/dL), Blood Pressure (systolic/diastolic in mmHg), Heart Rate (beats per minute), and BMI (body mass index, kg/m²). Clinical indicators capture Diabetes status (Yes/No), Family History of heart problems (1 = Yes, 0 = No), Previous Heart Problems (1 = Yes, 0 = No), Medication Use (1 = Yes, 0 = No), and Triglyceride levels (mg/dL). Lifestyle-related attributes include Smoking (1 = Smoker, 0 = Non-smoker), Obesity (1 = Obese, 0 = Not obese), Alcohol Consumption (None, Light, Moderate, Heavy), Diet (Healthy, Average, Unhealthy), Exercise Hours Per Week, Physical Activity Days Per Week, Stress Level (1–10 scale), Sedentary Hours Per Day, and Sleep Hours Per Day. Socioeconomic and demographic fields consist of Income, Country, Continent, and Hemisphere. The target variable, Heart Attack Risk, is a binary indicator (1 = Yes, 0 = No) denoting whether the patient is at risk of a heart attack.
+
+```{r}
+# Load ggplot2 for visualizations
+library(ggplot2)
+
+# Load dataset
+hd <- read.csv("data/raw/heart_attack_prediction_dataset.csv")
+
+# View dataset structure and summary
+str(hd)
+summary(hd)
+
+# Histogram of a continuous variable (Cholesterol)
+ggplot(hd, aes(x = Cholesterol)) +
+  geom_histogram(binwidth = 20, fill = "lightblue", color = "black") +
+  labs(title = "Distribution of Cholesterol Levels",
+       x = "Cholesterol (mg/dL)", y = "Count")
+
+# Boxplot of Age grouped by Heart Attack Risk
+ggplot(hd, aes(x = factor(Heart.Attack.Risk), y = Age, fill = factor(Heart.Attack.Risk))) +
+  geom_boxplot() +
+  labs(title = "Age Distribution by Heart Attack Risk",
+       x = "Heart Attack Risk (0 = No, 1 = Yes)", y = "Age (years)") +
+  scale_fill_manual(values = c("lightgreen", "red")) +
+  theme_minimal()
+
+# Bar plot of a categorical variable (Smoking)
+ggplot(hd, aes(x = factor(Smoking))) +
+  geom_bar(fill = "orange", color = "black") +
+  labs(title = "Smoking Status of Patients",
+       x = "Smoking (0 = Non-Smoker, 1 = Smoker)", y = "Count")
+
+```
+
+# 5. Research questions
+1. Which clinical, lifestyle, and demographic factors are most strongly associated with the risk of heart attack in patients?
+
+
+2. Which features contribute most to a machine learning model’s decision boundary for predicting heart attack risk?
+
+# 6. Data cleanup and processing plan
+
+- Check for missing values: Identify NAs using colSums(is.na(hd)); if very few, remove those rows; if moderate, impute using mean/median for continuous variables (e.g., Cholesterol, BMI) and mode for categorical variables (e.g., Diet, Alcohol Consumption).
+
+- Remove duplicate entries: Drop exact duplicates or repeated Patient IDs to avoid over-representation using hd <- hd[!duplicated(hd), ].
+
+- Fix inconsistent formats: Split Blood Pressure into two numeric columns (Systolic and Diastolic) and convert binary indicators (0/1) like Diabetes, Smoking, and Heart Attack Risk into categorical factors.
+
+- Validate ranges & handle outliers: Review continuous variables (e.g., Cholesterol, Triglycerides, BMI, Sleep Hours) for biologically implausible values; correct, cap, or remove extreme outliers as appropriate.
+
+- Standardize categorical variables: Ensure consistent levels for Sex (Male/Female), Diet (Healthy/Average/Unhealthy), and Alcohol Consumption (None/Light/Moderate/Heavy).
+
+- Create derived variables: Add new groupings such as Age Groups (e.g., 18–30, 31–50, 51–70, 71–90) and BMI Categories (Underweight, Normal, Overweight, Obese) to facilitate group comparisons in descriptive statistics and visualization.
+
+# 7. Descriptive statistics and data visualizations
+
+```{r}
+
+# Load dataset
+hd <- read.csv("data/raw/heart_attack_prediction_dataset.csv")
+
+# --- Continuous variables: Mean, Median, Range, SD ---
+continuous_vars <- c("Age", "Cholesterol", "Heart.Rate", "BMI", "Triglycerides","Exercise.Hours.Per.Week", "Stress.Level","Sedentary.Hours.Per.Day", "Income", 
+"Physical.Activity.Days.Per.Week", "Sleep.Hours.Per.Day")
+
+for (var in continuous_vars) {
+  cat("\nVariable:", var, "\n")
+  cat("Mean:", mean(hd[[var]], na.rm=TRUE), "\n")
+  cat("Median:", median(hd[[var]], na.rm=TRUE), "\n")
+  cat("Range:", diff(range(hd[[var]], na.rm=TRUE)), "\n")
+  cat("Standard Deviation:", sd(hd[[var]], na.rm=TRUE), "\n")
+}
+
+# --- Categorical variables: Frequency counts & proportions ---
+categorical_vars <- c("Sex", "Diabetes", "Family.History", "Smoking", "Obesity","Alcohol.Consumption", "Diet", "Previous.Heart.Problems","Medication.Use", "Country", "Continent", "Hemisphere","Heart.Attack.Risk")
+
+for (var in categorical_vars) {
+  cat("\nVariable:", var, "\n")
+  print(table(hd[[var]]))             
+}
+
+```
+
+```{r}
+# Function to separate categorical and numerical columns
+separate_columns_by_dtype <- function(data) {
+  categorical_cols <- names(data)[sapply(data, function(x) is.factor(x) || is.character(x))]
+  numerical_cols   <- names(data)[sapply(data, is.numeric)]
+  return(list(categorical = categorical_cols, numerical = numerical_cols))
+}
+
+# Example usage
+hd <- read.csv("data/raw/heart_attack_prediction_dataset.csv", stringsAsFactors = FALSE)
+
+cols_split <- separate_columns_by_dtype(hd)
+
+# Verify
+cat("Categorical Columns:\n")
+print(cols_split$categorical)
+
+cat("\nNumerical Columns:\n")
+print(cols_split$numerical)
+
+```
 
 
 
+```{r}
+# Load dataset
+hd <- read.csv("data/raw/heart_attack_prediction_dataset.csv")
 
+# Select only numeric variables
+numeric_vars <- names(hd)[sapply(hd, is.numeric)]
 
+# Build summary table
+numeric_summary <- data.frame(
+  variable = numeric_vars,
+  n = sapply(hd[numeric_vars], function(x) sum(!is.na(x))),
+  mean = sapply(hd[numeric_vars], function(x) round(mean(x, na.rm = TRUE), 2)),
+  median = sapply(hd[numeric_vars], function(x) round(median(x, na.rm = TRUE), 2)),
+  range = sapply(hd[numeric_vars], function(x) round(diff(range(x, na.rm = TRUE)), 2))
+)
 
+# Print clean summary table
+print(numeric_summary)
 
+```
+
+# 8. Planned statistical methods
+
+As the project progresses, I plan to use chi-square tests to assess associations between categorical factors (e.g., smoking, diabetes) and heart attack risk, and t-tests/ANOVA to compare continuous measures (e.g., cholesterol, BMI) across groups. To build predictive insight, I will apply logistic regression and may explore machine learning models such as decision trees or random forests. These methods will help identify key risk factors and evaluate their predictive power.
 
 
 
@@ -540,6 +682,8 @@ if (all(c("deaths") %in% names(national))) {
 # ) JOINT PROJECTS - References
 Project 1 - Our World in Data. "Coronvirus Pandemic (COVID-19) dataset." source location - Source: URL: https://docs.owid.io/projects/covid/en/latest/dataset.html 
 Project 2 - mclikmb4, (2021, April 4), Coronavirus-dataset France, Kaggle, <https://www.kaggle.com/datasets/mclikmb4/coronavirusdataset-france?select=chiffres-cles.csv> 
+
+Project 3 - Banerjee, S. (2021). Heart Attack Prediction Dataset. Kaggle. https://www.kaggle.com/datasets/iamsouravbanerjee/heart-attack-prediction-dataset
 
 # ) PROJECTS - Appendix
 ## Project 1
