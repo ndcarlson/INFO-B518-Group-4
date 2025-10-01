@@ -33,37 +33,21 @@ suppressPackageStartupMessages({
 ```
 
 # Project Idea One - Covid 19 (2021 ONLY - USA, UK, China, Belgium)
-## 1) Original Source: URL: https://docs.owid.io/projects/covid/en/latest/dataset.html
-## 2) Dataset moved:  https://catalog.ourworldindata.org/garden/covid/latest/compact/compact.csv
 
-### Selection Criteria:
-#### The data (see above) does meet the criteria of the assignment. In that it is relevant to health, publically accessible, sizable (61 columns and 530,292 rows), includes both categorical (e.g. country) and continuous variables (e.g. new_cases_per_million, total_deaths_per_million) and finally has been ethically sourced and de-identified. 
+# Selection Criteria:
+The data (see above) does meet the criteria of the assignment. In that it is relevant to health, publically accessible, sizable (61 columns and 530,292 rows), includes both categorical (e.g. country) and continuous variables (e.g. new_cases_per_million, total_deaths_per_million) and finally has been ethically sourced and de-identified. 
 
-
-
-```{r echo=FALSE, dataset_one_import}
+```{r echo=FALSE, results='hide', dataset_one_import}
 dataset_one_URL <- "https://docs.owid.io/projects/covid/en/latest/dataset.html"
 dataset_one_URL # to print the URL for the PDF
 
-data1 <- readr::read_csv("https://catalog.ourworldindata.org/garden/covid/latest/compact/compact.csv" , show_col_types = FALSE, progress = FALSE)
+data1 <- read.csv("data/raw/coviddata.csv")
 
 c(n_rows = nrow(data1), n_cols = ncol(data1))
 head(names(data1), 12)
 
 u <- unique(data1$country)
 u[grepl("United|USA|UK", u, ignore.case = TRUE)]
-```
-
-
-## 2) Introduction (4-6 Sentences)
-This project uses Covid 19 data from 'Our world in data'. We use this to primarily compare how daily new cases per million varied across four countries in 2021. We focus on 2021 to keep our comparisons on a common phase of the pandemic. The dataset itself does cover many more countries and years and also includes data on total cases and total deaths. We used the fields that have the suffix 'per_million'as any comparisons scale by population size. 
-
-## 3) Why this dataset? (1 paragraph)
- This dataset is highly relevant to health outcomes. The dataset is also very well documented, large (61 columns and 530k rows). For analysis potential, this dataset has both continuous fields (total_deaths_per_million, new_cases_per_million)  and categorical (e.g. Country), feasible for tables, histograms, boxplots, time trends. Using the fields with the suffix "per_million" allows better scaling for cross country comparisons and summaries. 
-  
-## 4) Variables and structure
-  
-```{r echo=FALSE, results='hide', Variables_and_structure}
 
 #Size
 c(n_rows = nrow(data1), n_cols = ncol(data1))
@@ -79,16 +63,39 @@ table(sapply(data1, function(x) class(x)[1]))
 str(data1, list.len = 20)
 head(data1, 10)
 summary(data1)
-
 ```
-## 5) Research questions
+# Introduction
+This project uses Covid 19 data from 'Our world in data'. We use this to primarily compare how daily new cases per million varied across four countries in 2021. We focus on 2021 to keep our comparisons on a common phase of the pandemic. The dataset itself does cover many more countries and years and also includes data on total cases and total deaths. We used the fields that have the suffix 'per_million'as any comparisons scale by population size. 
+
+# Dataset justification
+**Relevance:** Directly biomedical/public-health, reflecting real-world cases and death metrics during COVID-19.
+
+**Size/structure:** The file far exceeds the minimum requirements (61 columns and 530k rows) and includes both categorical (e.g. Country) and continuous fields (total_deaths_per_million, new_cases_per_million)
+
+**Accessibility/ethics:** Publicly accessible aggregated, de-identified counts suitable for academic use.
+
+**Analytical potential:** Feasible for tables, histograms, boxplots, time trends. Using the fields with the suffix "per_million" allows better scaling for cross country comparisons and summaries.
+
+**Ethical use.** The dataset consists of aggregated, de-identified counts without PII; no patient-level identifiers are present, aligning with course requirements for ethical, public data.
+  
+# Variables and structure
+This analysis focuses on a few key variables from the dataset. The primary categorical variable is 'country', which we have filtered to four specific nations. The main continuous variable is 'new_cases_per_million', which allows for a fair comparison of infection rates by account for population differences. Finally, the 'date' variable was used to filter the data to the 2021 calendar year. 
+
+A list of all the fields:
+- "country" 
+- "date" 
+- "total_cases", "total_cases_per_million"
+- "new_cases", "new_cases_smoothed", "new_cases_per_million", "new_cases_smoothed_per_million"
+- "total_deaths", "new_deaths", "new_deaths_smoothed", "total_deaths_per_million" 
+  
+# Research questions
 - 1. What share of days exceed a threshold (to simulated a government policy threshold to "flatten the curve") e.g 50 cases per million in each country
 - 2. Which of the selected countries had the highest typical daily new cases per million in 2021
 - 3. How did the monthly mean of new cases per million over 2021 for each country
 
-## 6) Data clean up & Processing plan
+# Data clean up & Processing plan
 We parsed the date field and derived a 'year' variable, then restricted the dataset to 2021 to keep figures more legible and comparable. We fixed our analysis to a small set of countries (United States, United Kingdom, China, Belgium) and then verified each has sufficient non missing values for 'new_cases_per_million' in 2021. this processing prepares the data for descriptive statistics and many visualisations.    
-```{r echo=FALSE, data_clean_up}
+```{r echo=FALSE, results='hide', data_clean_up}
 
 #check year is available & parse
 data1$date <- as.Date(data1$date)
@@ -117,10 +124,21 @@ d1_21_f$country <- factor (d1_21_f$country, levels = keep_countries)
 
 ```
 
-## 7) Descriptive statistics & visualisations
+# Descriptive statistics (figures in Appendix)
  We summarise categories (counts/proportions), report center & spread for one mumeric variable and add simple plots to visualise patterns 
-### 7.1) One-Way frequency table (categorical)
- Counts and proportions for a categorical variable 
+
+# Planned statisical methods
+To formally test for differences in the median daily new cases between the four countries, we plan to use a non-parametric test such as the Kruskal-Wallis test, given the skewed nature of the data. Further analysis could involve using correlation to explore the relationship between vaccination rates and new cases over time for each country. 
+
+# Limitations
+- Measurement differences - countries have different reporting rules, testing cadence & breadth.
+- Scope - Only 2021 was analysed. Other years or waves of the disease may show other patterns. 
+- per million rates do not adjust for demographics of each country, which may show other patterns. 
+- China has several near zero analysis - This may reflect reporting practices of this specific country
+
+# Appendix - Project One
+## One-Way frequency table (categorical)
+Counts and proportions for a categorical variable 
 ```{r echo=FALSE, onewaytable}
 # Counts and proportions for country
 tab_country <- table(d1_21_f$country)
@@ -129,11 +147,8 @@ prop_country <- prop.table(tab_country)
 tab_country
 round(prop_country, 3)
 ```
-  
-
-
-### 7.2) Bar Chart of Disease.Category (counts)
- Bar chart / Bar plot of disease category by count 
+## Bar Chart of Disease.Category (counts)
+Bar chart / Bar plot of disease category by count 
 ```{r echo=FALSE, barplot}
 # Bar chart / Bar plot of disease category by count
 med_cases <- tapply(d1_21_f$new_cases_per_million,
@@ -147,10 +162,7 @@ barplot(med_cases,
         las = 2)
 
 ```
-  
-
-
-### 7.3) Two way table (category by category)
+## Two way table (category by category)
   
 ```{r echo=FALSE, twowaytable}
 # Cross-tab and row/column proportions
@@ -171,11 +183,8 @@ row_high <- round(prop.table(tw, margin = 1)[, "TRUE"], 3)
 row_high
 
 ```
-  
+## Center & Spread (overall, selected countries, 2021)
 
-
-### 7.4) Center & Spread (overall, selected countries, 2021)
-  
 ```{r echo=FALSE, center_and_spread}
 
 
@@ -212,10 +221,7 @@ by_summ <- data.frame(
 print(by_summ)
 
 ```
-  
-
-
-### 7.5) Histogram (shape of the distrubution)
+## Histogram (shape of the distrubution)
   
 ```{r echo=FALSE, histogram}
 
@@ -248,11 +254,8 @@ legend("topright",
        lty = c(1, 2))
 
 ```
-  
-
-
-### 7.6) Boxplot (numeric by category)
- Boxplot (Mortality rate by category) 
+## Boxplot (numeric by category)
+Boxplot (Mortality rate by category) 
 ```{r echo=FALSE, boxplot}
 # Boxplot
 
@@ -288,11 +291,8 @@ legend("topright",
   abline(h = q, col = c("blue", "red", "orange"), lty = c(2, 3, 2))
   
 ```
-  
+## Simple time trend (average by year)
 
-
-### 7.7) Simple time trend (average by year)
-  
 ```{r echo=FALSE, timetrend}
 
 #month index
@@ -326,24 +326,15 @@ legend("topleft",
        lwd = 2, bty = "n")
 
 ```
-  
-## 8) Planned statisical methods
-We will compare 2021 distrubutions of 'new_cases_per_million' across the four countries using.... 
-
-  
-## 9) Limitations
-- Measurement differences - countries have different reporting rules, testing cadence & breadth.
-- Scope - Only 2021 was analysed. Other years or waves of the disease may show other patterns. 
-- per million rates do not adjust for demographics of each country, which may show other patterns. 
-- China has several near zero analysis - This may reflect reporting practices of this specific country
-
+\FloatBarrier
+\newpage 
 
 # Project Idea Two - Covid 19 Hospitalizations in France
 # Link to the dataset
 
-**Kaggle** - Coronavirusdataset France (file: `chiffres-cles.csv`)  
-**Actual URL:** <https://www.kaggle.com/datasets/mclikmb4/coronavirusdataset-france?select=chiffres-cles.csv>  
-**Google drive URL:** <https://drive.google.com/file/d/1rXHdGEDWFAMaitmkNSgehAt_e2FaC_PZ/view?usp=sharing>
+Kaggle - Coronavirusdataset France (file: `chiffres-cles.csv`)  
+Actual URL: <https://www.kaggle.com/datasets/mclikmb4/coronavirusdataset-france?select=chiffres-cles.csv>
+Google drive URL: <https://drive.google.com/file/d/1rXHdGEDWFAMaitmkNSgehAt_e2FaC_PZ/view?usp=sharing>
 
 # Introduction to the dataset
 
@@ -479,7 +470,7 @@ Across all rows, the median current hospitalizations was `r round(median(df$hosp
 
 Several fields like `tested` and early `confirmed_cases` have bad coverage over time, and indicators are hospital-centric rather than community-representative. Counts are aggregated and de-identified, so patient-level cannot be controlled. Because the dataset mixes granularities (national, regional, departmental), comparing across levels requires careful subsetting (`granularity == "country"` for national trends). These constraints limit causal interpretation, so we have to focus more on descriptive trends and clearly labeled comparisons.
 
-# Appendix
+# Appendix - Project Two
 
 ```{r results='hide'}
 national <- df |>
@@ -527,21 +518,25 @@ if (all(c("deaths") %in% names(national))) {
 # Project Idea Three - Heart attack
 
 
-# 1.Link to the dataset
+# Link to the dataset
 
 https://www.kaggle.com/datasets/iamsouravbanerjee/heart-attack-prediction-dataset
 
-# 2. Introduction to dataset
+# Introduction to dataset
 
 The Heart Attack Prediction Dataset, available on Kaggle, is a comprehensive resource for studying the clinical, lifestyle, and demographic factors associated with cardiovascular risk. It consists of 8,763 de-identified patient records, including continuous variables such as age, cholesterol, blood pressure, and heart rate, as well as categorical features like sex, chest pain type, smoking habits, diabetes status, and dietary patterns. Socioeconomic and geographic attributes, including income and region, further enrich the dataset by adding broader context to heart health predictors. The primary outcome variable indicates whether a patient is at risk of a heart attack, making the dataset well-suited for statistical analysis, visualization, and classification tasks. Its diverse mix of variables supports exploration of correlations, risk factors, and group comparisons, while also providing an ethical and accessible foundation for predictive modeling in cardiovascular health research.
 
-# 3. Dataset justification
+# Dataset justification
 
 I chose the Heart Attack Prediction Dataset because it directly addresses a critical biomedical challenge cardiovascular disease which remains one of the leading causes of mortality worldwide. The dataset integrates clinical, lifestyle, and demographic variables, making it highly relevant for exploring the multifactorial nature of heart health. With its balanced mix of categorical and continuous features, it offers strong potential for applying a variety of statistical methods, visualizations, and predictive modeling techniques. Its size and diversity of attributes make it complex enough to yield meaningful insights, yet still manageable for academic analysis. Overall, this dataset provides both real-world relevance and analytical richness, making it an excellent candidate for this project.
 
-# 4. Variables description
+# Variables description
 
-Key columns include Patient ID (unique identifier for each record), Age (in years), Sex (male or female), Cholesterol (cholesterol levels in mg/dL), Blood Pressure (systolic/diastolic in mmHg), Heart Rate (beats per minute), and BMI (body mass index, kg/m²). Clinical indicators capture Diabetes status (Yes/No), Family History of heart problems (1 = Yes, 0 = No), Previous Heart Problems (1 = Yes, 0 = No), Medication Use (1 = Yes, 0 = No), and Triglyceride levels (mg/dL). Lifestyle-related attributes include Smoking (1 = Smoker, 0 = Non-smoker), Obesity (1 = Obese, 0 = Not obese), Alcohol Consumption (None, Light, Moderate, Heavy), Diet (Healthy, Average, Unhealthy), Exercise Hours Per Week, Physical Activity Days Per Week, Stress Level (1–10 scale), Sedentary Hours Per Day, and Sleep Hours Per Day. Socioeconomic and demographic fields consist of Income, Country, Continent, and Hemisphere. The target variable, Heart Attack Risk, is a binary indicator (1 = Yes, 0 = No) denoting whether the patient is at risk of a heart attack.
+Key columns include Patient ID (unique identifier for each record), Age (in years), Sex (male or female), Cholesterol (cholesterol levels in mg/dL), Blood Pressure (systolic/diastolic in mmHg), Heart Rate (beats per minute), and BMI (body mass index, kg/m²). Clinical indicators capture Diabetes status (Yes/No), Family History of heart problems (1 = Yes, 0 = No), Previous Heart Problems (1 = Yes, 0 = No), Medication Use (1 = Yes, 0 = No), and Triglyceride levels (mg/dL).
+
+Lifestyle-related attributes include Smoking (1 = Smoker, 0 = Non-smoker), Obesity (1 = Obese, 0 = Not obese), Alcohol Consumption (None, Light, Moderate, Heavy), Diet (Healthy, Average, Unhealthy), Exercise Hours Per Week, Physical Activity Days Per Week, Stress Level (1–10 scale), Sedentary Hours Per Day, and Sleep Hours Per Day. Socioeconomic and demographic fields consist of Income, Country, Continent, and Hemisphere. 
+
+The target variable, Heart Attack Risk, is a binary indicator (1 = Yes, 0 = No) denoting whether the patient is at risk of a heart attack.
 
 ```{r}
 # Load ggplot2 for visualizations
@@ -576,13 +571,12 @@ ggplot(hd, aes(x = factor(Smoking))) +
 
 ```
 
-# 5. Research questions
+# Research questions
 1. Which clinical, lifestyle, and demographic factors are most strongly associated with the risk of heart attack in patients?
-
 
 2. Which features contribute most to a machine learning model’s decision boundary for predicting heart attack risk?
 
-# 6. Data cleanup and processing plan
+# Data cleanup and processing plan
 
 - Check for missing values: Identify NAs using colSums(is.na(hd)); if very few, remove those rows; if moderate, impute using mean/median for continuous variables (e.g., Cholesterol, BMI) and mode for categorical variables (e.g., Diet, Alcohol Consumption).
 
@@ -596,7 +590,8 @@ ggplot(hd, aes(x = factor(Smoking))) +
 
 - Create derived variables: Add new groupings such as Age Groups (e.g., 18–30, 31–50, 51–70, 71–90) and BMI Categories (Underweight, Normal, Overweight, Obese) to facilitate group comparisons in descriptive statistics and visualization.
 
-# 7. Descriptive statistics and data visualizations
+# Descriptive statistics (figures in Appendix)
+
 
 ```{r}
 
@@ -647,8 +642,6 @@ print(cols_split$numerical)
 
 ```
 
-
-
 ```{r}
 # Load dataset
 hd <- read.csv("data/raw/heart_attack_prediction_dataset.csv")
@@ -670,62 +663,15 @@ print(numeric_summary)
 
 ```
 
-# 8. Planned statistical methods
+# Planned statistical methods
 
 As the project progresses, I plan to use chi-square tests to assess associations between categorical factors (e.g., smoking, diabetes) and heart attack risk, and t-tests/ANOVA to compare continuous measures (e.g., cholesterol, BMI) across groups. To build predictive insight, I will apply logistic regression and may explore machine learning models such as decision trees or random forests. These methods will help identify key risk factors and evaluate their predictive power.
 
+# Limitations
 
-
+# Appendix - Project Three 
 
 # ) JOINT PROJECTS - References
-Project 1 - Our World in Data. "Coronvirus Pandemic (COVID-19) dataset." source location - Source: URL: https://docs.owid.io/projects/covid/en/latest/dataset.html 
-Project 2 - mclikmb4, (2021, April 4), Coronavirus-dataset France, Kaggle, <https://www.kaggle.com/datasets/mclikmb4/coronavirusdataset-france?select=chiffres-cles.csv> 
-
-Project 3 - Banerjee, S. (2021). Heart Attack Prediction Dataset. Kaggle. https://www.kaggle.com/datasets/iamsouravbanerjee/heart-attack-prediction-dataset
-
-# ) PROJECTS - Appendix
-## Project 1
-
-## Project 2
-
-```{r results='hide'}
-national <- df |>
-  filter(granularity == "country", location_code == "FRA") |>
-  arrange(date)
-
-plot_series <- function(data, y, title_txt, ylab_txt = "Count") {
-  ggplot(data, aes(x = date, y = .data[[y]])) +
-    geom_line(color = "blue", linewidth = 0.8) +
-    scale_x_date(date_breaks = "2 months",
-                 date_labels = "%Y-%m",
-                 expand = expansion(mult = c(0.01, 0.01))) +
-    labs(x = "Date", y = ylab_txt, title = title_txt) +
-    theme_minimal(base_size = 10) +
-    theme(
-      plot.title = element_text(hjust = 0.5),
-      axis.title.y = element_text(margin = margin(r = 6))
-    )
-}
-
-```
-
-```{r echo=FALSE, fig.cap="France (national): Hospitalized (current) over time."}
-if (all(c("hospitalized") %in% names(national))) {
-  plot_series(national, "hospitalized", "France (national): Hospitalized (current) over time", ylab_txt = "Patients")
-}
-```
-
-```{r echo=FALSE, fig.cap="France (national): ICU (current) over time."}
-if (all(c("icu_patients") %in% names(national))) {
-  plot_series(national, "icu_patients", "France (national): ICU (current) over time", ylab_txt = "Patients in ICU")
-}
-```
-
-```{r echo=FALSE, fig.cap="France (national): Cumulative deaths over time."}
-if (all(c("deaths") %in% names(national))) {
-  plot_series(national, "deaths", "France (national): Cumulative deaths over time", ylab_txt = "Deaths (cumulative)")
-}
-```
-
-
-
+- Project 1 - Our World in Data. (2024). Coronvirus Pandemic (COVID-19) dataset. <https://docs.owid.io/projects/covid/en/latest/dataset.html>
+- Project 2 - mclikmb4, (2021, April 4), Coronavirus-dataset France, Kaggle, <https://www.kaggle.com/datasets/mclikmb4/coronavirusdataset-france?select=chiffres-cles.csv> 
+- Project 3 - Banerjee, S. (2021). Heart Attack Prediction Dataset. Kaggle. https://www.kaggle.com/datasets/iamsouravbanerjee/heart-attack-prediction-dataset
