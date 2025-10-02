@@ -34,9 +34,6 @@ suppressPackageStartupMessages({
 
 # Project Idea One - Covid 19 (2021 ONLY - USA, UK, China, Belgium)
 
-# Selection Criteria:
-The data (see above) does meet the criteria of the assignment. In that it is relevant to health, publically accessible, sizable (61 columns and 530,292 rows), includes both categorical (e.g. country) and continuous variables (e.g. new_cases_per_million, total_deaths_per_million) and finally has been ethically sourced and de-identified. 
-
 ```{r echo=FALSE, dataset_one_import}
 dataset_one_URL <- "https://docs.owid.io/projects/covid/en/latest/dataset.html"
 dataset_one_URL # to print the URL for the PDF
@@ -67,6 +64,10 @@ u[grepl("United|USA|UK", u, ignore.case = TRUE)]
 This project uses Covid 19 data from 'Our world in data'. We use this to primarily compare how daily new cases per million varied across four countries in 2021. We focus on 2021 to keep our comparisons on a common phase of the pandemic. The dataset itself does cover many more countries and years and also includes data on total cases and total deaths. We used the fields that have the suffix 'per_million'as any comparisons scale by population size. 
 
 # Dataset justification
+
+# Selection Criteria:
+The data (see above) does meet the criteria of the assignment. In that it is relevant to health, publically accessible, sizable (61 columns and 530,292 rows), includes both categorical (e.g. country) and continuous variables (e.g. new_cases_per_million, total_deaths_per_million) and finally has been ethically sourced and de-identified. 
+
 **Relevance:** Directly biomedical/public-health, reflecting real-world cases and death metrics during COVID-19.
 
 **Size/structure:** The file far exceeds the minimum requirements (61 columns and 530k rows) and includes both categorical (e.g. Country) and continuous fields (total_deaths_per_million, new_cases_per_million)
@@ -544,28 +545,18 @@ I chose the Heart Attack Prediction Dataset because it directly addresses a crit
 
 # Variables description
 
-Key columns include Patient ID (unique identifier for each record), Age (in years), Sex (male or female), Cholesterol (cholesterol levels in mg/dL), Blood Pressure (systolic/diastolic in mmHg), Heart Rate (beats per minute), and BMI (body mass index, kg/m²). Clinical indicators capture Diabetes status (Yes/No), Family History of heart problems (1 = Yes, 0 = No), Previous Heart Problems (1 = Yes, 0 = No), Medication Use (1 = Yes, 0 = No), and Triglyceride levels (mg/dL).
-
-Lifestyle-related attributes include Smoking (1 = Smoker, 0 = Non-smoker), Obesity (1 = Obese, 0 = Not obese), Alcohol Consumption (None, Light, Moderate, Heavy), Diet (Healthy, Average, Unhealthy), Exercise Hours Per Week, Physical Activity Days Per Week, Stress Level (1–10 scale), Sedentary Hours Per Day, and Sleep Hours Per Day. Socioeconomic and demographic fields consist of Income, Country, Continent, and Hemisphere. 
-
-The target variable, Heart Attack Risk, is a binary indicator (1 = Yes, 0 = No) denoting whether the patient is at risk of a heart attack.
+Key columns include Patient ID (unique identifier for each record), Age (in years), Sex (male or female), Cholesterol (cholesterol levels in mg/dL), Blood Pressure (systolic/diastolic in mmHg), Heart Rate (beats per minute), and BMI (body mass index, kg/m²). Clinical indicators capture Diabetes status (Yes/No), Family History of heart problems (1 = Yes, 0 = No), Previous Heart Problems (1 = Yes, 0 = No), Medication Use (1 = Yes, 0 = No), and Triglyceride levels (mg/dL). Lifestyle-related attributes include Smoking (1 = Smoker, 0 = Non-smoker), Obesity (1 = Obese, 0 = Not obese), Alcohol Consumption (None, Light, Moderate, Heavy), Diet (Healthy, Average, Unhealthy), Exercise Hours Per Week, Physical Activity Days Per Week, Stress Level (1–10 scale), Sedentary Hours Per Day, and Sleep Hours Per Day. Socioeconomic and demographic fields consist of Income, Country, Continent, and Hemisphere. The target variable, Heart Attack Risk, is a binary indicator (1 = Yes, 0 = No) denoting whether the patient is at risk of a heart attack.
 
 ```{r}
 # Load ggplot2 for visualizations
 library(ggplot2)
 
 # Load dataset
-hd <- read.csv("data/raw/heart_attack_prediction_dataset.csv")
+hd <- read.csv("heart_attack_prediction_dataset.csv")
 
 # View dataset structure and summary
 str(hd)
 summary(hd)
-
-# Histogram of a continuous variable (Cholesterol)
-ggplot(hd, aes(x = Cholesterol)) +
-  geom_histogram(binwidth = 20, fill = "lightblue", color = "black") +
-  labs(title = "Distribution of Cholesterol Levels",
-       x = "Cholesterol (mg/dL)", y = "Count")
 
 # Boxplot of Age grouped by Heart Attack Risk
 ggplot(hd, aes(x = factor(Heart.Attack.Risk), y = Age, fill = factor(Heart.Attack.Risk))) +
@@ -586,6 +577,7 @@ ggplot(hd, aes(x = factor(Smoking))) +
 # Research questions
 1. Which clinical, lifestyle, and demographic factors are most strongly associated with the risk of heart attack in patients?
 
+
 2. Which features contribute most to a machine learning model’s decision boundary for predicting heart attack risk?
 
 # Data cleanup and processing plan
@@ -602,22 +594,12 @@ ggplot(hd, aes(x = factor(Smoking))) +
 
 - Create derived variables: Add new groupings such as Age Groups (e.g., 18–30, 31–50, 51–70, 71–90) and BMI Categories (Underweight, Normal, Overweight, Obese) to facilitate group comparisons in descriptive statistics and visualization.
 
-# Descriptive statistics (figures in Appendix)
-
-
-# Planned statistical methods
-
-As the project progresses, I plan to use chi-square tests to assess associations between categorical factors (e.g., smoking, diabetes) and heart attack risk, and t-tests/ANOVA to compare continuous measures (e.g., cholesterol, BMI) across groups. To build predictive insight, I will apply logistic regression and may explore machine learning models such as decision trees or random forests. These methods will help identify key risk factors and evaluate their predictive power.
-
-# Limitations
-
-This analysis is subject to several important limitations. The primary being the lack of precise definitions for certain variables. For example the variable 'Diet' is listed as only Helathy/Average/Unhealthy. The reason this matters is that without a clear defitinition explaining the meaning then these labels lose their potency. We don't know if healthy was determined by a food agency or is it a simple subjective checkbox.
-
-# Appendix - Project Three
+# Descriptive statistics and data visualizations
 
 ```{r}
+
 # Load dataset
-hd <- read.csv("data/raw/heart_attack_prediction_dataset.csv")
+hd <- read.csv("heart_attack_prediction_dataset.csv")
 
 # --- Continuous variables: Mean, Median, Range, SD ---
 continuous_vars <- c("Age", "Cholesterol", "Heart.Rate", "BMI", "Triglycerides","Exercise.Hours.Per.Week", "Stress.Level","Sedentary.Hours.Per.Day", "Income", 
@@ -635,53 +617,107 @@ for (var in continuous_vars) {
 categorical_vars <- c("Sex", "Diabetes", "Family.History", "Smoking", "Obesity","Alcohol.Consumption", "Diet", "Previous.Heart.Problems","Medication.Use", "Country", "Continent", "Hemisphere","Heart.Attack.Risk")
 
 for (var in categorical_vars) {
-cat("\nVariable:", var, "\n")
-print(table(hd[[var]]))             
+  cat("\nVariable:", var, "\n")
+  print(table(hd[[var]]))             
 }
-```
-
-```{r}
-# Function to separate categorical and numerical columns
-separate_columns_by_dtype <- function(data) {
-  categorical_cols <- names(data)[sapply(data, function(x) is.factor(x) || is.character(x))]
-  numerical_cols   <- names(data)[sapply(data, is.numeric)]
-  return(list(categorical = categorical_cols, numerical = numerical_cols))
-}
-
-# refresh dataset
-hd <- read.csv("data/raw/heart_attack_prediction_dataset.csv", stringsAsFactors = FALSE)
-
-cols_split <- separate_columns_by_dtype(hd)
-
-# Verify
-cat("Categorical Columns:\n")
-print(cols_split$categorical)
-
-cat("\nNumerical Columns:\n")
-print(cols_split$numerical)
 
 ```
 
+# Distribution of Heart Attack Risk Across Demographic and Lifestyle Factors
+
 ```{r}
+# Load library
+library(ggplot2)
+
 # Load dataset
-hd <- read.csv("data/raw/heart_attack_prediction_dataset.csv")
+hd <- read.csv("heart_attack_prediction_dataset.csv")
 
-# Select only numeric variables
-numeric_vars <- names(hd)[sapply(hd, is.numeric)]
+# BMI distribution by Heart Attack Risk 
+ggplot(hd, aes(x = BMI, fill = factor(Heart.Attack.Risk))) +
+  geom_histogram(position = "dodge", bins = 30, alpha = 0.7) +
+  labs(title = "BMI Distribution by Heart Attack Risk",
+       x = "BMI (kg/m²)", 
+       y = "Count", 
+       fill = "Heart Attack Risk") +
+  theme_minimal()
 
-# Build summary table
-numeric_summary <- data.frame(
-  variable = numeric_vars,
-  n = sapply(hd[numeric_vars], function(x) sum(!is.na(x))),
-  mean = sapply(hd[numeric_vars], function(x) round(mean(x, na.rm = TRUE), 2)),
-  median = sapply(hd[numeric_vars], function(x) round(median(x, na.rm = TRUE), 2)),
-  range = sapply(hd[numeric_vars], function(x) round(diff(range(x, na.rm = TRUE)), 2))
-)
+# Age distribution by Heart Attack Risk 
+ggplot(hd, aes(x = Age, fill = factor(Heart.Attack.Risk))) +
+  geom_histogram(position = "dodge", bins = 30, alpha = 0.7) +
+  labs(title = "Age Distribution by Heart Attack Risk",
+       x = "Age (years)", 
+       y = "Count", 
+       fill = "Heart Attack Risk") +
+  theme_minimal()
 
-# Print clean summary table
-print(numeric_summary)
+# Heart attack risk by gender
+ggplot(hd, aes(x = Sex, fill = factor(Heart.Attack.Risk))) +
+  geom_bar(position = "fill") +
+  geom_text(stat = "count", aes(label = ..count..),
+            position = position_fill(vjust = 0.5), color = "black") +
+  labs(title = "Heart Attack Risk by Gender",
+       x = "Gender",
+       y = "Proportion",
+       fill = "Heart Attack Risk (0=No, 1=Yes)") +
+  theme_minimal()
+
+# Heart Attack Risk by Smoking Status 
+ggplot(hd, aes(x = factor(Smoking), fill = factor(Heart.Attack.Risk))) +
+  geom_bar(position = "fill") +
+  geom_text(stat = "count", aes(label = ..count..),
+            position = position_fill(vjust = 0.5), color = "black") +
+  labs(title = "Heart Attack Risk by Smoking Status",
+       x = "Smoking (0=No, 1=Yes)",
+       y = "Proportion",
+       fill = "Heart Attack Risk") +
+  theme_minimal()
+
+# Heart Attack Risk by Obesity Status
+ggplot(hd, aes(x = factor(Obesity), fill = factor(Heart.Attack.Risk))) +
+  geom_bar(position = "fill") +
+  geom_text(stat = "count", aes(label = ..count..),
+            position = position_fill(vjust = 0.5), color = "black") +
+  labs(title = "Heart Attack Risk by Obesity Status",
+       x = "Obesity (0=No, 1=Yes)",
+       y = "Proportion",
+       fill = "Heart Attack Risk") +
+  theme_minimal()
 
 ```
+
+```{r}
+library(ggplot2)
+library(reshape2) 
+library(corrplot)   
+
+numeric_vars <- hd[sapply(hd, is.numeric)]
+
+# Compute correlation matrix
+cor_matrix <- cor(numeric_vars, use = "complete.obs")
+melted_cor <- melt(cor_matrix)
+
+ggplot(melted_cor, aes(x = Var1, y = Var2, fill = value)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  labs(title = "Correlation Matrix Heatmap",
+       x = "",
+       y = "",
+       fill = "Correlation")
+
+```
+
+# Planned statistical methods
+
+As the project progresses, I plan to use chi-square tests to assess associations between categorical factors (e.g., smoking, diabetes) and heart attack risk, and t-tests/ANOVA to compare continuous measures (e.g., cholesterol, BMI) across groups. To build predictive insight, I will apply logistic regression and may explore machine learning models such as decision trees or random forests. These methods will help identify key risk factors and evaluate their predictive power.
+
+# Limitations 
+
+While descriptive statistics provide valuable insights into the dataset, they also have some limitations. Measures like mean and standard deviation can be influenced by outliers, which may distort the true central tendency and variability of the data. Categorical variables summarized with frequency counts may oversimplify complex health behaviors, such as smoking or alcohol consumption, without capturing intensity or duration. The dataset itself may contain missing values, inconsistencies, or biases due to self-reported measures (e.g., diet, stress level, or exercise). Additionally, descriptive statistics do not establish causal relationships; they only describe patterns. Therefore, more advanced statistical methods and inferential analyses are needed to draw meaningful conclusions about risk factors for heart attacks.
+
+# Appendix - Project Three
+
 
 # ) JOINT PROJECTS - References
 - Project 1 - Our World in Data. (2024). Coronvirus Pandemic (COVID-19) dataset. <https://docs.owid.io/projects/covid/en/latest/dataset.html>
