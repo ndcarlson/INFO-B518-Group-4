@@ -34,9 +34,6 @@ suppressPackageStartupMessages({
 
 # Project Idea One - Covid 19 (2021 ONLY - USA, UK, China, Belgium)
 
-# Selection Criteria:
-The data (see above) does meet the criteria of the assignment. In that it is relevant to health, publically accessible, sizable (61 columns and 530,292 rows), includes both categorical (e.g. country) and continuous variables (e.g. new_cases_per_million, total_deaths_per_million) and finally has been ethically sourced and de-identified. 
-
 ```{r echo=FALSE, dataset_one_import}
 dataset_one_URL <- "https://docs.owid.io/projects/covid/en/latest/dataset.html"
 dataset_one_URL # to print the URL for the PDF
@@ -67,6 +64,10 @@ u[grepl("United|USA|UK", u, ignore.case = TRUE)]
 This project uses Covid 19 data from 'Our world in data'. We use this to primarily compare how daily new cases per million varied across four countries in 2021. We focus on 2021 to keep our comparisons on a common phase of the pandemic. The dataset itself does cover many more countries and years and also includes data on total cases and total deaths. We used the fields that have the suffix 'per_million'as any comparisons scale by population size. 
 
 # Dataset justification
+
+# Selection Criteria:
+The data (see above) does meet the criteria of the assignment. In that it is relevant to health, publically accessible, sizable (61 columns and 530,292 rows), includes both categorical (e.g. country) and continuous variables (e.g. new_cases_per_million, total_deaths_per_million) and finally has been ethically sourced and de-identified. 
+
 **Relevance:** Directly biomedical/public-health, reflecting real-world cases and death metrics during COVID-19.
 
 **Size/structure:** The file far exceeds the minimum requirements (61 columns and 530k rows) and includes both categorical (e.g. Country) and continuous fields (total_deaths_per_million, new_cases_per_million)
