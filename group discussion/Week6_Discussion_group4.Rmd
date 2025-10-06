@@ -1,0 +1,40 @@
+---
+title: "Week 6 Discussion (Group)" 
+author: "Group 4"
+date: "`r Sys.Date()`"
+output: pdf_document
+fontsize: 11pt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Week 6 | Discussion (Group) - Project Group 4
+
+* General section:
+  * What does a confidence interval tell us about a population parameter?
+  * If we have a 95% confidence interval of [2.5, 3.5] for a population mean, how should we interpret this interval?
+  * How does changing the confidence level (e.g., from 90% to 99%) affect the width of the confidence interval? Why does this happen?
+  * How is the margin of error related to confidence intervals?
+
+* Real-life paper section: (DIVYA)
+  * Find a research paper where confidence intervals are used to present findings. Use APA citations.
+  * Analyze how well the confidence interval is explained in the report.
+  * How does the variability of the data impact the confidence interval?
+  * What might happen if the confidence interval is too wide to provide meaningful insights?
+
+* Real-life case study section: (NICK) 
+  * Explore a real-life case study where biased sampling led to incorrect conclusions. Use APA citations.
+  * What were the consequences, and how could the issue have been avoided?
+  * Why is it important to use proper sampling methods in statistics?
+  * Discuss the risks of bias in sampling.
+
+* Group dataset section:
+  * Describe one of your datasets and research question(s). Use APA citations (where necessary).
+  * Select a key variable from this dataset. Describe the variable.
+  * Calculate the 95% confidence interval for the mean of the variable.
+  * Discuss how the intervals vary based on changes in sample size, variability, and confidence levels.
+  * Discuss how sample size affects the confidence interval width.
+  * Is it possible to have a narrow confidence interval with a small sample size?
+  * Reflect on the accuracy of using small versus large samples and what role statistical sampling plays in ensuring reliable results.
