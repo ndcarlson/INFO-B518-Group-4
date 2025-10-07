@@ -117,3 +117,117 @@ Squire, P. (1988). *Why the 1936 Literary Digest poll failed*. *Public Opinion Q
   * Discuss how sample size affects the confidence interval width.
   * Is it possible to have a narrow confidence interval with a small sample size?
   * Reflect on the accuracy of using small versus large samples and what role statistical sampling plays in ensuring reliable results.
+
+# Group Dataset Section
+
+## 1. Describe one of your datasets and research question(s)
+
+Our group used the Coronavirus Dataset - France from Kaggle (*Mclikmb4, 2021*), which compiles daily COVID-19 indicators reported by French public health officials. The dataset includes variables like *date*, *new_cases*, *new_deaths*, *total_cases*, *total_deaths*, *confirmed_cases*, and *hospitalizations*. It provides a detailed overview of how COVID-19 evolved across France from 2020 onward, including both absolute and population-adjusted values.  
+
+**Research Question:**  
+What is the average number of confirmed COVID-19 cases in France, and how confidently can we estimate this population mean using a 95% confidence interval?  
+
+This question allows us to explore how confidence intervals and sampling theory help interpret real-world data reliability.  
+
+
+## 2. Select a key variable from this dataset and describe it
+
+We selected the variable *confirmed_cases*, which measures the number of newly confirmed COVID-19 cases each day.  
+
+- **Type:** Quantitative, continuous variable  
+- **Units:** Confirmed cases per day  
+- **Purpose:** This variable reflects the spread of the virus and helps determine trends in transmission and infection over time.  
+
+By focusing on *confirmed_cases*, we can better understand the daily progression of the pandemic across France.  
+
+
+## 3. Calculate the 95% confidence interval for the mean of the variable  
+
+
+```{r ci-calculation, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+library(readr)
+library(dplyr)
+
+df <- readr::read_csv(
+  "https://drive.google.com/uc?export=download&id=1rXHdGEDWFAMaitmkNSgehAt_e2FaC_PZ",
+  show_col_types = FALSE
+)
+
+df <- df |>
+  mutate(
+    granularity = recode(granularity,
+      "pays" = "country",
+      "departement" = "department",
+      "collectivite-outremer" = "overseas_collectivity",
+      "monde" = "world",
+      "region" = "region"
+    ),
+    date = as.Date(date),
+    confirmed_cases = suppressWarnings(as.numeric(confirmed_cases))
+  )
+
+set.seed(123)
+sample_data <- df |>
+  filter(!is.na(confirmed_cases)) |>
+  slice_sample(n = 50) |>
+  pull(confirmed_cases)
+
+ci_result <- t.test(sample_data, conf.level = 0.95)
+
+cat("
+**95% Confidence Interval:**  
+  - Lower Bound:", round(ci_result$conf.int[1], 2), "  
+  - Upper Bound:", round(ci_result$conf.int[2], 2), "\n")
+
+```
+  
+  
+**Interpretation:**  
+We are 95% confident that the true mean number of confirmed COVID-19 cases in France lies between the lower and upper bounds of the calculated interval. 
+This means that if several random samples were drawn, approximately 95% of those intervals would contain the actual population mean.  
+
+
+## 4. Discuss how the intervals vary based on changes in sample size, variability, and confidence levels
+
+- **Sample Size:** Increasing the sample size narrows the confidence interval because the standard error decreases, resulting in greater precision.  
+- **Variability:** Higher variability widens the interval and makes data points more spread out around the mean.  
+- **Confidence Level:** Raising the confidence level from something like 95% to 99% widens the interval because more certainty needs a larger margin of error.
+
+```{r conf-level-comparison, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+
+ci_90 <- t.test(sample_data, conf.level = 0.90)$conf.int
+ci_99 <- t.test(sample_data, conf.level = 0.99)$conf.int
+
+cat("
+**Confidence Interval Comparison**
+
+90% Confidence Interval:  
+  - Lower Bound:", round(ci_90[1], 2), "  
+  - Upper Bound:", round(ci_90[2], 2), "  
+
+99% Confidence Interval:  
+  - Lower Bound:", round(ci_99[1], 2), "  
+  - Upper Bound:", round(ci_99[2], 2), "\n")
+
+```
+
+As you can see from the test above, the 90% CI has a range of (68,661.41 | 347,390.9). Whereas the 99% CI has a range of (-14,747.17 | 430,799.5). As you can see from the results, as the confidence interval scales, the interval range also scales to be wider.  
+
+
+## 5. Discuss how sample size affects the confidence interval width
+
+The width of a confidence interval decreases as the sample size increases, following the formula: Margin of Error = t * (s / sqrt(n)).  
+
+Because the sample size (n) appears in the denominator, increasing n makes the overall error smaller. For instance, if you take a small sample of around 30 observations, the confidence interval might be pretty wide. If you increase the sample size to about 100 observations, the interval becomes much narrower. With a much larger sample of 300 observations, the interval becomes even tighter. This helps to show that larger samples have tighter and more reliable confidence intervals, even when variability remains constant.  
+
+
+## 6. Is it possible to have a narrow confidence interval with a small sample size? Reflect on accuracy and sampling reliability
+
+No, it's not really possible to have that. Narrow confidence intervals with small sample sizes are unusual and can be misleading. A small sample may produce a tight interval only when variability is extremely low, but it would be very rare in real-world data like COVID-19 case counts.  
+
+Larger samples reduce random error and provide more reliable estimates of the true population mean. This is important in public health data because small or biased samples might exaggerate or underestimate infection trends, leading to inaccurate conclusions and poor health decisions. Proper statistical sampling helps to make sure representation, stability, and meaningful confidence levels so the results we get are actually correct and actionable.  
+
+
+## References (APA 7th Edition)
+
+mclikmb4, (2021, April 4), Coronavirus-dataset France, Kaggle, <https://www.kaggle.com/datasets/mclikmb4/coronavirusdataset-france?select=chiffres-cles.csv>
