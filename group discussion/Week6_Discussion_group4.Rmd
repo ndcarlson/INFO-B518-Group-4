@@ -36,7 +36,7 @@ Margin of error is the half-width of a confidence interval. again, ME = (Critica
 
 \newpage 
 
-# Real-life paper section: (DIVYA)
+# Real-life paper section:
  * Find a research paper where confidence intervals are used to present findings. Use APA citations.
  * Analyze how well the confidence interval is explained in the report.
  * How does the variability of the data impact the confidence interval?
