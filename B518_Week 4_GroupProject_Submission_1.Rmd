@@ -34,11 +34,11 @@ suppressPackageStartupMessages({
 
 # Project Idea One - Covid 19 (2021 ONLY - USA, UK, China, Belgium)
 
-```{r echo=FALSE, dataset_one_import}
+```{r echo=FALSE, dataset_one_import, results="hide"}
 dataset_one_URL <- "https://docs.owid.io/projects/covid/en/latest/dataset.html"
 dataset_one_URL # to print the URL for the PDF
 
-data1 <- read.csv("data/raw/coviddata.csv")
+data1 <- readr::read_csv("https://catalog.ourworldindata.org/garden/covid/latest/compact/compact.csv" , show_col_types = FALSE, progress = FALSE)
 
 c(n_rows = nrow(data1), n_cols = ncol(data1))
 head(names(data1), 12)
@@ -46,26 +46,12 @@ head(names(data1), 12)
 u <- unique(data1$country)
 u[grepl("United|USA|UK", u, ignore.case = TRUE)]
 
-#Size
-#c(n_rows = nrow(data1), n_cols = ncol(data1))
-
-#Column Names
-#head(names(data1))
-
-#Types
-#table(sapply(data1, function(x) class(x)[1]))
-
-#quick analysis
-
-#str(data1, list.len = 20)
-#summary(data1)
 ```
 # Introduction
 This project uses Covid 19 data from 'Our world in data'. We use this to primarily compare how daily new cases per million varied across four countries in 2021. We focus on 2021 to keep our comparisons on a common phase of the pandemic. The dataset itself does cover many more countries and years and also includes data on total cases and total deaths. We used the fields that have the suffix 'per_million'as any comparisons scale by population size. 
 
 # Dataset justification
 
-# Selection Criteria:
 The data (see above) does meet the criteria of the assignment. In that it is relevant to health, publically accessible, sizable (61 columns and 530,292 rows), includes both categorical (e.g. country) and continuous variables (e.g. new_cases_per_million, total_deaths_per_million) and finally has been ethically sourced and de-identified. 
 
 **Relevance:** Directly biomedical/public-health, reflecting real-world cases and death metrics during COVID-19.
@@ -131,13 +117,12 @@ d1_21_f$country <- factor (d1_21_f$country, levels = keep_countries)
 ```
 
 # Descriptive statistics (figures in Appendix)
- Our descriptive analysis for 2021 reveals starkly different pandemic experiences among the four selected countries. The most significant finding is the extreme contrast between China, which reported virtually no community spread, and the western nations all expereicned substantial waves of the Covid virus. 
- 
- Answering our first research question, the two way frequency shows that China had reported zero days exceeding a 50 new cases per million threshold. In contrast this threshold was crossed 94.% of days in Belgium, 89.9% in the USA and 84.9% in the UK. 
- 
- For our second question, the summary statistics table identified the UK as having the highesy typical daily caseload, with a median of 421.6 new cases per million, nearly double that of the USA at 218.4. The overall distrubution o cases is heavily right skewed, a pattern confirmed visually by the histogram and the numerous high end outliers visibl in the boxplot. 
- 
- Lastly, for our third research question. the time trend plot issustrates how these case rates evolved monthly. China's rate remained flat, the US, UK and Belgium all expereicned a summer drop followed by a big surge in Q4 of 2021. 
+Our descriptive analysis for 2021 reveals starkly different pandemic experiences among the four selected countries. The most significant finding is the extreme contrast between China, which reported virtually no community spread, and the western nations all expereicned substantial waves of the Covid virus. 
+Answering our first research question, the two way frequency (see appendix) shows that China had reported zero days exceeding a 50 new cases per million threshold. In contrast this threshold was crossed 94.% of days in Belgium, 89.9% in the USA and 84.9% in the UK. 
+
+For our second question, the summary statistics table (see appendix) identified the UK as having the highesy typical daily caseload, with a median of 421.6 new cases per million, nearly double that of the USA at 218.4. The overall distrubution o cases is heavily right skewed, a pattern confirmed visually by the histogram (see appendix) and the numerous high end outliers visible in the boxplot. 
+
+Lastly, for our third research question. the time trend plot issustrates how these case rates evolved monthly. China's rate remained flat, the US, UK and Belgium all expereicned a summer drop followed by a big surge in Q4 of 2021. 
  
 ## Boxplot (numeric by category)
 Boxplot (Mortality rate by category) 
@@ -213,7 +198,7 @@ legend("topleft",
 ```
 
 # Planned statisical methods
-To formally test for differences in the median daily new cases between the four countries, we plan to use a non-parametric test such as the Kruskal-Wallis test, given the skewed nature of the data. Further analysis could involve using correlation to explore the relationship between vaccination rates and new cases over time for each country. 
+Given the skewed distributions of daily new cases, we will compare medians and IQR's across the four countries and visuaise differences with boxplots and monthly time-trend plots. We will defer formal hypothesis testing to later. However, with that said we may consider a Krushkal-Wallis test to compare medians across countries and examine the relationship between baccination measures and new cases after and if we felt the need to expand the dataset in order to include vaccination variables.
 
 # Limitations
 - Measurement differences - countries have different reporting rules, testing cadence & breadth.
@@ -225,12 +210,24 @@ To formally test for differences in the median daily new cases between the four 
 ## One-Way frequency table (categorical)
 Counts and proportions for a categorical variable 
 ```{r echo=FALSE, onewaytable}
-# Counts and proportions for country
-tab_country <- table(d1_21_f$country)
-prop_country <- prop.table(tab_country)
+stopifnot("country" %in% names(d1_21_f))
 
-tab_country
-round(prop_country, 3)
+tab_country <- as.data.frame(table(country = d1_21_f$country, useNA = "ifany"))
+names(tab_country) <- c("country", "count")
+
+tab_country$country <- ifelse(is.na(tab_country$country), "NA", as.character(tab_country$country))
+
+# Add proportions
+total_n <- sum(tab_country$count)
+tab_country$proportion <- tab_country$count / total_n
+
+# formatted table
+knitr::kable(
+  transform(tab_country,
+            proportion = round(proportion, 3)),
+  caption = "One-way table of Country: counts and proportions"
+)
+
 ```
 ## Bar Chart of Disease.Category (counts)
 Bar chart / Bar plot of disease category by count 
@@ -250,59 +247,89 @@ barplot(med_cases,
 ## Two way table (category by category)
   
 ```{r echo=FALSE, twowaytable}
-# Cross-tab and row/column proportions
 
-d_tw <- subset(d1_21_f, !is.na(new_cases_per_million))
+stopifnot(all(c("country","new_cases_per_million") %in% names(d1_21_f)))
 
-d_tw$high_day <- d_tw$new_cases_per_million > threshold
+if (!exists("threshold")) {
+  threshold <- stats::quantile(d1_21_f$new_cases_per_million, 0.75, na.rm = TRUE)
+}
 
-tw <- table(d_tw$country, d_tw$high_day)
-tw
+d_tw <- subset(d1_21_f, !is.na(new_cases_per_million) & !is.na(country))
 
-round(prop.table(tw, margin = 1), 3)
-round(prop.table(tw, margin = 2), 3)
+d_tw$high_day <- factor(d_tw$new_cases_per_million > threshold, levels = c(FALSE, TRUE),
+                        labels = c("Low/Normal","High"))
 
-addmargins(tw)
-row_high <- round(prop.table(tw, margin = 1)[, "TRUE"], 3)
-row_high
+# Two-way table
+tw <- with(d_tw, table(country, high_day, useNA = "no"))
+
+# Show raw counts
+knitr::kable(as.data.frame.matrix(tw), caption = "Two-way table: Country × High-day indicator (counts)")
+
+# Row proportions (within country)
+row_prop <- prop.table(tw, margin = 1)
+knitr::kable(round(as.data.frame.matrix(row_prop), 3),
+             caption = "Row proportions: P(High/Low | Country)")
+
+# Column proportions (within high/low)
+col_prop <- prop.table(tw, margin = 2)
+knitr::kable(round(as.data.frame.matrix(col_prop), 3),
+             caption = "Column proportions: P(Country | High/Low)")
+
+# Add margins (counts) for completeness
+tw_margins <- addmargins(tw)
+knitr::kable(as.data.frame.matrix(tw_margins),
+             caption = "Two-way table with margins (counts)")
 
 ```
 ## Center & Spread (overall, selected countries, 2021)
 
 ```{r echo=FALSE, center_and_spread}
 
-
+stopifnot(all(c("country","new_cases_per_million") %in% names(d1_21_f)))
 
 x <- d1_21_f$new_cases_per_million
 x <- x[!is.na(x)]
 
-overall_stats <- c(
-  mean = mean(x),
-  median = median(x),
-  min = min(x),
-  max = max(x),
-  range = diff(range(x)),
-  IQR = IQR(x),
-  sd = sd(x))
+# checks if empty
+if (length(x) == 0L) {
+  cat("No non-missing values found for new_cases_per_million.\n")
+} else {
+  overall_stats <- c(
+    mean   = mean(x),
+    median = median(x),
+    min    = min(x),
+    max    = max(x),
+    range  = diff(range(x)),
+    IQR    = IQR(x),
+    sd     = sd(x)
+  )
+  knitr::kable(as.data.frame(t(round(overall_stats[c("median","IQR","sd")], 1))),
+               caption = "Overall center & spread (new_cases_per_million)")
+}
 
-round(overall_stats[c("median","IQR","sd")], 1)
-
-
-#By Countries summaries 
+# By-country summaries
 by_med <- tapply(d1_21_f$new_cases_per_million, d1_21_f$country, median, na.rm = TRUE)
-by_iqr <- tapply(d1_21_f$new_cases_per_million, d1_21_f$country, IQR, na.rm = TRUE)
-by_sd <- tapply(d1_21_f$new_cases_per_million, d1_21_f$country, sd, na.rm = TRUE)
+by_iqr <- tapply(d1_21_f$new_cases_per_million, d1_21_f$country, IQR,    na.rm = TRUE)
+by_sd  <- tapply(d1_21_f$new_cases_per_million, d1_21_f$country, sd,     na.rm = TRUE)
 
-
+# Combine
+cn <- union(names(by_med), union(names(by_iqr), names(by_sd)))
 by_summ <- data.frame(
-    country = names(by_med),
-    median = round(by_med, 1),
-    IQR = round(by_iqr, 1),
-    sd = round(by_sd, 1),
-    row.names = NULL
+  country = cn,
+  median  = round(by_med[cn], 1),
+  IQR     = round(by_iqr[cn], 1),
+  sd      = round(by_sd[cn], 1),
+  row.names = NULL
 )
 
-print(by_summ)
+by_summ$median[is.na(by_summ$median)] <- NA
+by_summ$IQR[is.na(by_summ$IQR)]       <- NA
+by_summ$sd[is.na(by_summ$sd)]         <- NA
+
+by_summ <- by_summ[order(by_summ$median, decreasing = TRUE, na.last = TRUE), ]
+
+knitr::kable(by_summ, caption = "By-country center & spread (new_cases_per_million)")
+
 
 ```
 ## Histogram (shape of the distrubution)
@@ -351,7 +378,7 @@ Google drive URL: <https://drive.google.com/file/d/1rXHdGEDWFAMaitmkNSgehAt_e2Fa
 
 # Introduction to the dataset
 
-This dataset provides daily COVID-19 surveillance indicators for France at multiple geographic granularities (country, region, department, overseas collectivities). Each record includes a calendar date, a location code, and a location name, enabling comparisons across space and time. Indicators cover hospitalized patients, ICU occupancy, cumulative deaths, cumulative recoveries, and daily flows of new admissions (hospital and ICU). Source/provenance fields support auditability. The structure suits descriptive analyses and visualizations, with optional regional comparisons to highlight spatial heterogeneity. These indicators and their definitions are documented on the Kaggle dataset page (mclikmb4, 2020-2021).
+This dataset provides daily COVID-19 surveillance indicators for France at multiple geographic granularities (country, region, department, overseas collectivities). Each record includes a calendar date, a location code, and a location name, enabling comparisons across space and time. Indicators cover hospitalized patients, ICU occupancy, cumulative deaths, cumulative recoveries, and daily flows of new admissions (hospital and ICU). Source/provenance fields support auditability. The structure suits descriptive analyses and visualizations, with optional regional comparisons to highlight the uneven distribution. These indicators and their definitions are documented on the Kaggle dataset page (mclikmb4, 2020-2021).
 
 # Dataset justification
 
@@ -533,11 +560,11 @@ if (all(c("deaths") %in% names(national))) {
 
 # Link to the dataset
 
-https://www.kaggle.com/datasets/iamsouravbanerjee/heart-attack-prediction-dataset
+<https://www.kaggle.com/datasets/iamsouravbanerjee/heart-attack-prediction-dataset>
 
 # Introduction to dataset
 
-The Heart Attack Prediction Dataset, available on Kaggle, is a comprehensive resource for studying the clinical, lifestyle, and demographic factors associated with cardiovascular risk. It consists of 8,763 de-identified patient records, including continuous variables such as age, cholesterol, blood pressure, and heart rate, as well as categorical features like sex, chest pain type, smoking habits, diabetes status, and dietary patterns. Socioeconomic and geographic attributes, including income and region, further enrich the dataset by adding broader context to heart health predictors. The primary outcome variable indicates whether a patient is at risk of a heart attack, making the dataset well-suited for statistical analysis, visualization, and classification tasks. Its diverse mix of variables supports exploration of correlations, risk factors, and group comparisons, while also providing an ethical and accessible foundation for predictive modeling in cardiovascular health research.
+The Heart Attack Prediction Dataset, available on Kaggle, is a comprehensive resource for studying the clinical, lifestyle, and demographic factors associated with cardiovascular risk. It consists of 8,763 de-identified patient records, including continuous variables such as age, cholesterol, blood pressure, and heart rate, as well as categorical features like sex, chest pain type, smoking habits, diabetes status, and dietary patterns. Socioeconomic and geographic attributes, including income and region, help to enhance the dataset by adding more context to heart health predictors. The primary outcome variable indicates whether a patient is at risk of a heart attack, making the dataset well-suited for this project. It has a large mix of variables that support exploration of correlations, risk factors, and group comparisons, while also providing an ethical and accessible foundation for predictive modeling in cardiovascular health research.
 
 # Dataset justification
 
@@ -545,20 +572,23 @@ I chose the Heart Attack Prediction Dataset because it directly addresses a crit
 
 # Variables description
 
-Key columns include Patient ID (unique identifier for each record), Age (in years), Sex (male or female), Cholesterol (cholesterol levels in mg/dL), Blood Pressure (systolic/diastolic in mmHg), Heart Rate (beats per minute), and BMI (body mass index, kg/m²). Clinical indicators capture Diabetes status (Yes/No), Family History of heart problems (1 = Yes, 0 = No), Previous Heart Problems (1 = Yes, 0 = No), Medication Use (1 = Yes, 0 = No), and Triglyceride levels (mg/dL). Lifestyle-related attributes include Smoking (1 = Smoker, 0 = Non-smoker), Obesity (1 = Obese, 0 = Not obese), Alcohol Consumption (None, Light, Moderate, Heavy), Diet (Healthy, Average, Unhealthy), Exercise Hours Per Week, Physical Activity Days Per Week, Stress Level (1–10 scale), Sedentary Hours Per Day, and Sleep Hours Per Day. Socioeconomic and demographic fields consist of Income, Country, Continent, and Hemisphere. The target variable, Heart Attack Risk, is a binary indicator (1 = Yes, 0 = No) denoting whether the patient is at risk of a heart attack.
+Key columns include Patient ID (unique identifier for each record), Age (in years), Sex (male or female), Cholesterol (cholesterol levels in mg/dL), Blood Pressure (systolic/diastolic in mmHg), Heart Rate (beats per minute), and BMI (body mass index, kg/m²). Clinical indicators capture Diabetes status (Yes/No), Family History of heart problems (1 = Yes, 0 = No), Previous Heart Problems (1 = Yes, 0 = No), Medication Use (1 = Yes, 0 = No), and Triglyceride levels (mg/dL). Lifestyle-related attributes include Smoking (1 = Smoker, 0 = Non-smoker), Obesity (1 = Obese, 0 = Not obese), Alcohol Consumption (None, Light, Moderate, Heavy), Diet (Healthy, Average, Unhealthy), Exercise Hours Per Week, Physical Activity Days Per Week, Stress Level (1-10 scale), Sedentary Hours Per Day, and Sleep Hours Per Day. Socioeconomic and demographic fields consist of Income, Country, Continent, and Hemisphere. The target variable, Heart Attack Risk, is a binary indicator (1 = Yes, 0 = No) denoting whether the patient is at risk of a heart attack.
 
-```{r}
-# Load ggplot2 for visualizations
+```{r, results='hide'}
+# Packages
+library(readr)
 library(ggplot2)
 
-# Load dataset
-hd <- read.csv("heart_attack_prediction_dataset.csv")
+heart_url <- "https://drive.google.com/uc?export=download&id=19rojU9JWTSA4eAcHq0hOFmJZWwZqanLx"
 
-# View dataset structure and summary
+# Load dataset
+hd <- readr::read_csv(heart_url, show_col_types = FALSE)
+
+names(hd) <- make.names(names(hd))
+
 str(hd)
 summary(hd)
 
-# Boxplot of Age grouped by Heart Attack Risk
 ggplot(hd, aes(x = factor(Heart.Attack.Risk), y = Age, fill = factor(Heart.Attack.Risk))) +
   geom_boxplot() +
   labs(title = "Age Distribution by Heart Attack Risk",
@@ -566,11 +596,11 @@ ggplot(hd, aes(x = factor(Heart.Attack.Risk), y = Age, fill = factor(Heart.Attac
   scale_fill_manual(values = c("lightgreen", "red")) +
   theme_minimal()
 
-# Bar plot of a categorical variable (Smoking)
 ggplot(hd, aes(x = factor(Smoking))) +
   geom_bar(fill = "orange", color = "black") +
   labs(title = "Smoking Status of Patients",
-       x = "Smoking (0 = Non-Smoker, 1 = Smoker)", y = "Count")
+       x = "Smoking (0 = Non-Smoker, 1 = Smoker)", y = "Count") +
+  theme_minimal()
 
 ```
 
@@ -592,121 +622,13 @@ ggplot(hd, aes(x = factor(Smoking))) +
 
 - Standardize categorical variables: Ensure consistent levels for Sex (Male/Female), Diet (Healthy/Average/Unhealthy), and Alcohol Consumption (None/Light/Moderate/Heavy).
 
-- Create derived variables: Add new groupings such as Age Groups (e.g., 18–30, 31–50, 51–70, 71–90) and BMI Categories (Underweight, Normal, Overweight, Obese) to facilitate group comparisons in descriptive statistics and visualization.
+- Create derived variables: Add new groupings such as Age Groups (e.g., 18-30, 31-50, 51-70, 71-90) and BMI Categories (Underweight, Normal, Overweight, Obese) to facilitate group comparisons in descriptive statistics and visualization.
 
 # Descriptive statistics and data visualizations
 
-```{r}
+In this group of data, clinical and lifestyle measures show clear structure consistent with cardiovascular risk profiles. Age and BMI show right-skewed distributions with central tendencies in plausible clinical ranges (median age = `r round(median(hd$Age, na.rm = TRUE))` years; median BMI = `r round(median(hd$BMI, na.rm = TRUE), 1)` kg/m²), while lipids such as cholesterol and triglycerides span wide ranges (see Appendix Table A1 for full summaries). Visual patterns display that individuals labeled at risk for heart attack tend to be older and have higher BMI relative to those not at risk (see Appendix Figures A1–A2). Proportional bar charts suggest higher risk prevalence among smokers and those with obesity compared with their counterparts (see Appendix Figures A4–A5), and risk proportions appear to differ by sex (see Appendix Figure A3).  
 
-# Load dataset
-hd <- read.csv("heart_attack_prediction_dataset.csv")
-
-# --- Continuous variables: Mean, Median, Range, SD ---
-continuous_vars <- c("Age", "Cholesterol", "Heart.Rate", "BMI", "Triglycerides","Exercise.Hours.Per.Week", "Stress.Level","Sedentary.Hours.Per.Day", "Income", 
-"Physical.Activity.Days.Per.Week", "Sleep.Hours.Per.Day")
-
-for (var in continuous_vars) {
-  cat("\nVariable:", var, "\n")
-  cat("Mean:", mean(hd[[var]], na.rm=TRUE), "\n")
-  cat("Median:", median(hd[[var]], na.rm=TRUE), "\n")
-  cat("Range:", diff(range(hd[[var]], na.rm=TRUE)), "\n")
-  cat("Standard Deviation:", sd(hd[[var]], na.rm=TRUE), "\n")
-}
-
-# --- Categorical variables: Frequency counts & proportions ---
-categorical_vars <- c("Sex", "Diabetes", "Family.History", "Smoking", "Obesity","Alcohol.Consumption", "Diet", "Previous.Heart.Problems","Medication.Use", "Country", "Continent", "Hemisphere","Heart.Attack.Risk")
-
-for (var in categorical_vars) {
-  cat("\nVariable:", var, "\n")
-  print(table(hd[[var]]))             
-}
-
-```
-
-# Distribution of Heart Attack Risk Across Demographic and Lifestyle Factors
-
-```{r}
-# Load library
-library(ggplot2)
-
-# Load dataset
-hd <- read.csv("heart_attack_prediction_dataset.csv")
-
-# BMI distribution by Heart Attack Risk 
-ggplot(hd, aes(x = BMI, fill = factor(Heart.Attack.Risk))) +
-  geom_histogram(position = "dodge", bins = 30, alpha = 0.7) +
-  labs(title = "BMI Distribution by Heart Attack Risk",
-       x = "BMI (kg/m²)", 
-       y = "Count", 
-       fill = "Heart Attack Risk") +
-  theme_minimal()
-
-# Age distribution by Heart Attack Risk 
-ggplot(hd, aes(x = Age, fill = factor(Heart.Attack.Risk))) +
-  geom_histogram(position = "dodge", bins = 30, alpha = 0.7) +
-  labs(title = "Age Distribution by Heart Attack Risk",
-       x = "Age (years)", 
-       y = "Count", 
-       fill = "Heart Attack Risk") +
-  theme_minimal()
-
-# Heart attack risk by gender
-ggplot(hd, aes(x = Sex, fill = factor(Heart.Attack.Risk))) +
-  geom_bar(position = "fill") +
-  geom_text(stat = "count", aes(label = ..count..),
-            position = position_fill(vjust = 0.5), color = "black") +
-  labs(title = "Heart Attack Risk by Gender",
-       x = "Gender",
-       y = "Proportion",
-       fill = "Heart Attack Risk (0=No, 1=Yes)") +
-  theme_minimal()
-
-# Heart Attack Risk by Smoking Status 
-ggplot(hd, aes(x = factor(Smoking), fill = factor(Heart.Attack.Risk))) +
-  geom_bar(position = "fill") +
-  geom_text(stat = "count", aes(label = ..count..),
-            position = position_fill(vjust = 0.5), color = "black") +
-  labs(title = "Heart Attack Risk by Smoking Status",
-       x = "Smoking (0=No, 1=Yes)",
-       y = "Proportion",
-       fill = "Heart Attack Risk") +
-  theme_minimal()
-
-# Heart Attack Risk by Obesity Status
-ggplot(hd, aes(x = factor(Obesity), fill = factor(Heart.Attack.Risk))) +
-  geom_bar(position = "fill") +
-  geom_text(stat = "count", aes(label = ..count..),
-            position = position_fill(vjust = 0.5), color = "black") +
-  labs(title = "Heart Attack Risk by Obesity Status",
-       x = "Obesity (0=No, 1=Yes)",
-       y = "Proportion",
-       fill = "Heart Attack Risk") +
-  theme_minimal()
-
-```
-
-```{r}
-library(ggplot2)
-library(reshape2) 
-library(corrplot)   
-
-numeric_vars <- hd[sapply(hd, is.numeric)]
-
-# Compute correlation matrix
-cor_matrix <- cor(numeric_vars, use = "complete.obs")
-melted_cor <- melt(cor_matrix)
-
-ggplot(melted_cor, aes(x = Var1, y = Var2, fill = value)) +
-  geom_tile(color = "white") +
-  scale_fill_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
-  labs(title = "Correlation Matrix Heatmap",
-       x = "",
-       y = "",
-       fill = "Correlation")
-
-```
+The correlation heatmap (Appendix Figure A6) shows that body measurements and lipid levels are strongly related to each other, which makes sense since these factors are often linked in heart health. In contrast, variables tied to lifestyle and behavior only show weaker connections with vitals. Overall, these descriptive results give a good starting point for the statistical tests we plan to run (like chi-square for categorical variables and t-tests or ANOVA for continuous ones). They also suggest that using multivariable models could help us better understand how factors like age, body size, cholesterol, and lifestyle habits each contribute to heart attack risk.
 
 # Planned statistical methods
 
@@ -718,8 +640,101 @@ While descriptive statistics provide valuable insights into the dataset, they al
 
 # Appendix - Project Three
 
+```{r, results='hide'}
+# Table A1: Continuous-variable summaries
+continuous_vars <- c(
+  "Age", "Cholesterol", "Heart.Rate", "BMI", "Triglycerides",
+  "Exercise.Hours.Per.Week", "Stress.Level", "Sedentary.Hours.Per.Day",
+  "Income", "Physical.Activity.Days.Per.Week", "Sleep.Hours.Per.Day"
+)
 
-# ) JOINT PROJECTS - References
-- Project 1 - Our World in Data. (2024). Coronvirus Pandemic (COVID-19) dataset. <https://docs.owid.io/projects/covid/en/latest/dataset.html>
-- Project 2 - mclikmb4, (2021, April 4), Coronavirus-dataset France, Kaggle, <https://www.kaggle.com/datasets/mclikmb4/coronavirusdataset-france?select=chiffres-cles.csv> 
-- Project 3 - Banerjee, S. (2021). Heart Attack Prediction Dataset. Kaggle. https://www.kaggle.com/datasets/iamsouravbanerjee/heart-attack-prediction-dataset
+cont_summary <- lapply(continuous_vars, function(v) {
+  x <- hd[[v]]
+  rng <- range(x, na.rm = TRUE)
+  data.frame(
+    Variable = v,
+    N = sum(!is.na(x)),
+    Mean = mean(x, na.rm = TRUE),
+    Median = median(x, na.rm = TRUE),
+    SD = sd(x, na.rm = TRUE),
+    Min = rng[1],
+    Max = rng[2],
+    IQR = IQR(x, na.rm = TRUE)
+  )
+})
+cont_summary <- do.call(rbind, cont_summary)
+
+knitr::kable(cont_summary, caption = "Appendix Table A1. Descriptive statistics for continuous variables.")
+
+# Table A2: Categorical-variable counts (long format)
+categorical_vars <- c(
+  "Sex", "Diabetes", "Family.History", "Smoking", "Obesity",
+  "Alcohol.Consumption", "Diet", "Previous.Heart.Problems",
+  "Medication.Use", "Country", "Continent", "Hemisphere",
+  "Heart.Attack.Risk"
+)
+
+cat_list <- lapply(categorical_vars, function(v) {
+  if (!v %in% names(hd)) return(NULL)
+  tt <- as.data.frame(table(Level = hd[[v]], useNA = "ifany"))
+  tt$Variable <- v
+  tt
+})
+cat_list <- Filter(Negate(is.null), cat_list)
+cat_summary <- do.call(rbind, cat_list)
+cat_summary$Level <- ifelse(is.na(cat_summary$Level), "NA", as.character(cat_summary$Level))
+
+knitr::kable(cat_summary, caption = "Appendix Table A2. Frequency counts for categorical variables.")
+
+# Appendix Figures
+
+ggplot(hd, aes(x = BMI, fill = factor(Heart.Attack.Risk))) +
+  geom_histogram(position = "dodge", bins = 30, alpha = 0.7) +
+  labs(x = "BMI (kg/m²)", y = "Count", fill = "Heart Attack Risk") +
+  theme_minimal()
+
+ggplot(hd, aes(x = Age, fill = factor(Heart.Attack.Risk))) +
+  geom_histogram(position = "dodge", bins = 30, alpha = 0.7) +
+  labs(x = "Age (years)", y = "Count", fill = "Heart Attack Risk") +
+  theme_minimal()
+
+ggplot(hd, aes(x = Sex, fill = factor(Heart.Attack.Risk))) +
+  geom_bar(position = "fill") +
+  geom_text(stat = "count", aes(label = ..count..),
+            position = position_fill(vjust = 0.5), color = "black") +
+  labs(x = "Sex", y = "Proportion", fill = "Heart Attack Risk (0=No, 1=Yes)") +
+  theme_minimal()
+
+ggplot(hd, aes(x = factor(Smoking), fill = factor(Heart.Attack.Risk))) +
+  geom_bar(position = "fill") +
+  geom_text(stat = "count", aes(label = ..count..),
+            position = position_fill(vjust = 0.5), color = "black") +
+  labs(x = "Smoking (0=No, 1=Yes)", y = "Proportion", fill = "Heart Attack Risk") +
+  theme_minimal()
+
+ggplot(hd, aes(x = factor(Obesity), fill = factor(Heart.Attack.Risk))) +
+  geom_bar(position = "fill") +
+  geom_text(stat = "count", aes(label = ..count..),
+            position = position_fill(vjust = 0.5), color = "black") +
+  labs(x = "Obesity (0=No, 1=Yes)", y = "Proportion", fill = "Heart Attack Risk") +
+  theme_minimal()
+
+library(reshape2)
+numeric_vars <- hd[sapply(hd, is.numeric)]
+cor_matrix <- cor(numeric_vars, use = "complete.obs")
+melted_cor <- melt(cor_matrix)
+ggplot(melted_cor, aes(x = Var1, y = Var2, fill = value)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  labs(x = NULL, y = NULL, fill = "Correlation")
+
+
+```
+
+# JOINT PROJECTS - References
+
+- Project 1 - Our World in Data. (2024). Coronvirus Pandemic (COVID-19) dataset. <https://docs.owid.io/projects/covid/en/latest/dataset.html>  
+- Project 2 - mclikmb4, (2021, April 4), Coronavirus-dataset France, Kaggle, <https://www.kaggle.com/datasets/mclikmb4/coronavirusdataset-france?select=chiffres-cles.csv>  
+- Project 3 - Banerjee, S. (2021). Heart Attack Prediction Dataset. Kaggle. <https://www.kaggle.com/datasets/iamsouravbanerjee/heart-attack-prediction-dataset>
