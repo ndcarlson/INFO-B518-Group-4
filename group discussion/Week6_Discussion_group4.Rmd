@@ -38,6 +38,49 @@ knitr::opts_chunk$set(echo = TRUE)
   * Why is it important to use proper sampling methods in statistics?
   * Discuss the risks of bias in sampling.
 
+# Real-life Case Study Section  
+
+## 1. Explore a real-life case study where biased sampling led to incorrect conclusions
+
+A famous historical example of biased sampling occurred during the 1936 U.S. presidential election, when *The Literary Digest* magazine conducted one of the largest opinion polls in history. The magazine sent out more than ten million questionnaires to predict whether Franklin D. Roosevelt or Alf Landon would win the presidency. Approximately 2.4 million responses were received, and the poll predicted a decisive victory for Landon. However, the actual election results were the opposite — Roosevelt won in a landslide.
+
+The failure of this prediction stemmed from selection bias and nonresponse bias. The sample was drawn from automobile registration lists, telephone directories, and magazine subscription records. During the Great Depression, people who owned cars or telephones tended to be wealthier and thus more likely to vote Republican. On top of that, individuals who responded voluntarily were not representative of the overall population, adding to the distortion (*Squire, 1988*). This case demonstrates that a massive sample size cannot overcome a fundamentally biased sampling.
+
+
+## 2. What were the consequences, and how could the issue have been avoided?
+
+The poll’s inaccuracy had serious consequences for both the magazine’s credibility and the public’s trust in polling. *The Literary Digest*’s reputation was completely damaged, leading to a decline in readership and eventual closure. In contrast, George Gallup, who used a smaller but scientifically randomized sample, correctly predicted Roosevelt’s victory. This event marked a turning point in modern statistics and public opinion research, proving that representation matters more than just sample size (*Bryson, 1976*).
+
+The issue could have been avoided through probability sampling instead of convenience sampling. Specifically:
+
+- Drawing a random sample that represented various socioeconomic groups.  
+- Using stratified sampling to ensure proportional representation from urban and rural populations.  
+- Conducting follow-ups to reduce nonresponse bias.
+
+
+## 3. Why is it important to use proper sampling methods in statistics?
+
+Proper sampling methods are essential because statistical inferences depend on how well a sample represents the population. Without representation, even precise calculations like means, confidence intervals, and margins of error can be misleading. Sound sampling allows researchers to generalize findings with confidence and minimize systematic error. The *Literary Digest* poll demonstrated that biased data collection can lead to false conclusions, even when millions of data points are available. Good sampling design is thus the foundation of reliable data analysis.
+
+
+## 4. Discuss the risks of bias in sampling  
+
+Sampling bias can arise in multiple ways:
+
+- **Selection Bias:** Occurs when some groups are more likely to be included than others. For example, in 1936, only wealthier Americans were sampled because they owned telephones or cars.  
+- **Nonresponse Bias:** Individuals who fail to respond may differ systematically from those who do; in the Digest poll, low-income voters were underrepresented.  
+- **Measurement Bias:** Poorly designed questions or data collection methods can influence responses.  
+- **Convenience Bias:** Relying on easily accessible participants rather than a random cross-section of the population.  
+
+Each of these biases distorts statistical estimates and weakens the validity of conclusions. Recognizing and minimizing bias ensures that results are accurate, generalizable, and trustworthy.
+
+
+## References (APA 7th Edition)
+
+Bryson, L. (1976). *The Literary Digest poll: Making of a statistical myth*. *Public Opinion Quarterly, 40*, 431–436. https://doi.org/10.1086/268319  
+
+Squire, P. (1988). *Why the 1936 Literary Digest poll failed*. *Public Opinion Quarterly, 52*, 125–133. https://doi.org/10.1086/269082
+
 * Group dataset section:
   * Describe one of your datasets and research question(s). Use APA citations (where necessary).
   * Select a key variable from this dataset. Describe the variable.
