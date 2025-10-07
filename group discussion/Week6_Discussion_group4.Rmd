@@ -30,6 +30,8 @@ Changing the confidence level from 90% to 99% would affect the width of the CI b
 ## How is the margin of error related to confidence intervals?
 Margin of error is the half-width of a confidence interval. again, ME = (Critical Value) x (SE). Increasing the confidence level raises the critical value, so the margin of error and therefore the interval would get wider. 
 
+\newpage 
+
 # Real-life paper section: (DIVYA)
 * Find a research paper where confidence intervals are used to present findings. Use APA citations.
 * Analyze how well the confidence interval is explained in the report.
@@ -37,13 +39,19 @@ Margin of error is the half-width of a confidence interval. again, ME = (Critica
 * What might happen if the confidence interval is too wide to provide meaningful insights?
 
 ## Find a research paper where confidence intervals are used to present findings. Use APA citations.
-Lininger, M. R., & Riemann, B. L. (2016). Statistical primer for athletic trainers: Using confidence intervals and effect sizes to evaluate clinical meaningfulness. Journal of Athletic Training, 51(12), 1045–1048. https://doi.org/10.4085/1062-6050-51.12.14.
+Lininger, M. R., & Riemann, B. L. (2016). Statistical primer for athletic trainers: Using confidence intervals and effect sizes to evaluate clinical meaningfulness. Journal of Athletic Training, 51(12), 1045-1048. https://doi.org/10.4085/1062-6050-51.12.14.
 ## Analyze how well the confidence interval is explained in the report.
-In the paper the concept of the confidence interval (CI) is explained very clearly and effectively, especially for readers in clinical and applied health fields. The authors begin by defining a CI as a “range of values within which the population value is believed to lie at a given level of statistical confidence”. They go beyond the mathematical definition by emphasizing its practical importance helping clinicians understand not only whether a treatment effect exists but also how precise that estimate is. The explanation is strengthened through a practical example involving ankle dorsiflexion range of motion (ROM), which demonstrates how the CI can help determine whether an observed difference is likely to be clinically meaningful. The authors illustrate that a narrow CI (e.g. 5°–8°) indicates a more precise and useful estimate, while a wide CI (e.g.1°–15°) leads to uncertainty and limited decision-making value. They also discuss factors influencing CI width, such as sample size, variability, and confidence level, and caution that even a 95% CI does not guarantee every patient will experience the same result. Overall, the report explains confidence intervals in a thorough, logical, and clinically relevant manner, making a complex statistical concept accessible and meaningful for practitioners.
+In the paper the concept of the confidence interval (CI) is mentioned several times and is explained very well, especially for readers who can relate or work in clinical and health fields. The authors begin by defining a CI as a “range of values within which the population value is believed to lie at a given level of statistical confidence”. The Author then goes beyond the mathematical or technical definition by emphasizing the practical importance helping clinicians understand not only if a treatment effect exists but also how precise that estimate is. 
+This is contintued to be strengthened by a practical example involving ankle dorsiflexion range of motion (ROM), which shows how the CI can help determine whether an observed difference is likely to be meaningful in a clinical setting. The author explains that a narrow CI (e.g. 5°-8°) indicates a more precise and useful estimate, while a wide CI (e.g.1°-15°) leads to uncertainty and limited decision-making value. 
+They also discuss factors influencing CI width, such as sample size, variability, and confidence level, and caution that even a 95% CI does not guarantee every patient will experience the same result. Overall, the report explains confidence intervals in a thorough, logical, and clinically relevant manner, making a complex statistical concept accessible and meaningful for practitioners.
 ## How does the variability of the data impact the confidence interval?
-According to the paper, the variability of the data has a direct influence on the width of the confidence interval (CI). When there is greater variability in the sample data meaning that participants respond differently to the treatment—the CI becomes wider, indicating less precision in estimating the true population effect. This happens because inconsistent responses among individuals make it harder to determine the actual impact of the intervention. On the other hand, lower variability results in a narrower CI, providing a more precise and reliable estimate of the true effect. The authors state that “variability within the sample indicates that the treatment effect was not consistent among study participants, which can occur when inclusion or exclusion criteria are broad”. Therefore, reducing variability in a study helps produce narrower confidence intervals and allows clinicians to interpret results with greater confidence in their accuracy.
+The variability of the data has a direct influence on the width of the confidence interval (CI). When there is greater variability in the sample data, which means that participants respond differently to the treatment then the CI becomes wider, indicating less precision in estimating the true population effect. This happens because inconsistent responses among individuals would make it harder to determine the impact of the intervention. 
+On the other hand, a lower variability results in a narrower CI, providing a more precise estimate of the true effect. The authors state that “variability within the sample indicates that the treatment effect was not consistent among study participants, which can occur when inclusion or exclusion criteria are broad”. Therefore, reducing variability in a study helps produce narrower confidence intervals and allows clinicians to interpret results with greater confidence in their accuracy.
 ## What might happen if the confidence interval is too wide to provide meaningful insights?
-The variability of the data directly affects the width and precision of the confidence interval (CI). According to the paper, when there is greater variability among study participants meaning that individuals respond differently to the intervention the confidence interval becomes wider. This happens because inconsistent responses make it harder to estimate the true population effect with precision. In contrast, when data variability is low, meaning participants respond more uniformly, the CI becomes narrower and provides a more precise estimate of the treatment’s effect. The authors explain that variability within the sample indicates that the treatment effect was not consistent among study participants, which can occur when inclusion or exclusion criteria are broad. They note that wide intervals caused by high variability make it difficult for clinicians to be confident about the actual benefit of an intervention. Thus, minimizing variability through careful study design and participant selection leads to narrower, more useful confidence intervals for clinical decision-making.
+The variability of the data directly affects the width and precision of the confidence interval (CI). According to the paper, when there is greater variability among study participants, this means that individuals respond differently to the intervention and this is reflected by the confidence interval becoming wider. This happens because inconsistent responses make it harder to estimate the true population effect with precision. 
+In contrast, when data variability is low, which means the participants respond more repetively, the CI becomes narrower and provides a more precise estimate of the treatment’s effect. The authors explain that variability within the sample indicates that the treatment effect was not consistent among study participants, which can occur when inclusion or exclusion criteria are broad. They note that wide intervals caused by high variability make it difficult for clinicians to be confident about the actual benefit of an intervention. This means that minimizing variability through careful study design and participant selection would leads to narrower, more useful confidence intervals for clinical decision-making.
+
+\newpage 
 
 # Real-life Case Study Section  
 
@@ -84,11 +92,13 @@ Each of these biases distorts statistical estimates and weakens the validity of 
 
 ## References (APA 7th Edition)
 
-Bryson, L. (1976). *The Literary Digest poll: Making of a statistical myth*. *Public Opinion Quarterly, 40*, 431–436. https://doi.org/10.1086/268319  
+Bryson, L. (1976). *The Literary Digest poll: Making of a statistical myth*. *Public Opinion Quarterly, 40*, 431-436. https://doi.org/10.1086/268319  
 
-Squire, P. (1988). *Why the 1936 Literary Digest poll failed*. *Public Opinion Quarterly, 52*, 125–133. https://doi.org/10.1086/269082
+Squire, P. (1988). *Why the 1936 Literary Digest poll failed*. *Public Opinion Quarterly, 52*, 125-133. https://doi.org/10.1086/269082
 
-* Group dataset section:
+\newpage 
+
+# Group dataset section:
   * Describe one of your datasets and research question(s). Use APA citations (where necessary).
   * Select a key variable from this dataset. Describe the variable.
   * Calculate the 95% confidence interval for the mean of the variable.
