@@ -12,17 +12,21 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Week 6 | Discussion (Group) - Project Group 4
 
-* General section:
+# General section:
   * What does a confidence interval tell us about a population parameter?
-    * A confidence interval is an "interval estimate" that gives a range of plausible values for the population and reflects 'sampling variability'. For example you could say "We are 95% confident the population mean is between 80 and 93. 
   * If we have a 95% confidence interval of [2.5, 3.5] for a population mean, how should we interpret this interval?
-    * We are 95% confident that the population mean lies between 2.5 and 3.5. Another way to also interpret this is if you were to repeat this sampling process several times, 95% of the confidence intervals calculated in the same way would contain the population true mean. True mean = the population mean and reflects the actual average of the whole population, which is usually unknown and we try to estimate it through sampling. 
   * How does changing the confidence level (e.g., from 90% to 99%) affect the width of the confidence interval? Why does this happen?
-    * Changing the confidence level from 90% to 99% would affect the width of the CI by it becoming wider, not shorter. This happens due to it having a larger "critical value" which is used in the following formula. 
-    * (Margin of error = critical value x standard error).A larger critical value (90% -> 99%) would then make the margin of error wider and therefore the width. 
   * How is the margin of error related to confidence intervals?
-    * Margin of error is the half-width of a confidence interval. again, ME = (Critical Value) x (SE). Increasing the confidence level raises the critical value, so the margin of error and therefore the interval would get wider. 
 
+## What does a confidence interval tell us about a population parameter?
+A confidence interval is an "interval estimate" that gives a range of plausible values for the population and reflects 'sampling variability'. For example you could say "We are 95% confident the population mean is between 80 and 93. 
+## If we have a 95% confidence interval of [2.5, 3.5] for a population mean, how should we interpret this interval?
+We are 95% confident that the population mean lies between 2.5 and 3.5. Another way to also interpret this is if you were to repeat this sampling process several times, 95% of the confidence intervals calculated in the same way would contain the population true mean. True mean = the population mean and reflects the actual average of the whole population, which is usually unknown and we try to estimate it through sampling. 
+## How does changing the confidence level (e.g., from 90% to 99%) affect the width of the confidence interval? Why does this happen?
+Changing the confidence level from 90% to 99% would affect the width of the CI by it becoming wider, not shorter. This happens due to it having a larger "critical value" which is used in the following formula. 
+(Margin of error = critical value x standard error).A larger critical value (90% -> 99%) would then make the margin of error wider and therefore the width. 
+## How is the margin of error related to confidence intervals?
+Margin of error is the half-width of a confidence interval. again, ME = (Critical Value) x (SE). Increasing the confidence level raises the critical value, so the margin of error and therefore the interval would get wider. 
 
 
 * Real-life paper section: (DIVYA)
