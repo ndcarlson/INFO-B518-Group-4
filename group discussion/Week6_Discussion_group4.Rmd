@@ -231,3 +231,9 @@ Larger samples reduce random error and provide more reliable estimates of the tr
 ## References (APA 7th Edition)
 
 mclikmb4, (2021, April 4), Coronavirus-dataset France, Kaggle, <https://www.kaggle.com/datasets/mclikmb4/coronavirusdataset-france?select=chiffres-cles.csv>
+
+
+# Team reflection
+
+Working as a group sharpened our coordination as well as our statistics. This brief pushed us to split tasks and set deadlines which lead to us covering the whole brief well. When one of us stalled, we were able to cover each other well, even when we lost a member of the team. 
+The exercise deepened our understanding and general grasp of confidence intervals. We linked the mechanics of this to real meaning through the papers and studies. Higher confidence users a larger critical value, increasing the margin of error and widening the interval. Larger samples or lower variability narrow it instead. 
